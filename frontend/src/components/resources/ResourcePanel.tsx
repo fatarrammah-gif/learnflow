@@ -1,7 +1,9 @@
 import { X, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ResourceCard } from "./ResourceCard";
 import { useRoadmapStore } from "@/store/roadmapStore";
+import { staggerContainer, fadeInUp } from "@/lib/motion";
 import type { YoutubeResource } from "@/types/resource";
 import type { Criterion } from "@/types/criteria";
 
@@ -50,7 +52,18 @@ export function ResourcePanel({ resources, criteria, isLoading }: Props) {
               No resources yet. Click "Fetch Resources" to search YouTube for this topic.
             </div>
           ) : (
-            resources.map((r) => <ResourceCard key={r.id} resource={r} criteria={criteria} />)
+            <motion.div
+              className="space-y-3"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
+              {resources.map((r) => (
+                <motion.div key={r.id} variants={fadeInUp}>
+                  <ResourceCard resource={r} criteria={criteria} />
+                </motion.div>
+              ))}
+            </motion.div>
           )}
         </div>
       </div>

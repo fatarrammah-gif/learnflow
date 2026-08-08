@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 // cva() creates a function that returns the right Tailwind classes based on the variant/size props
@@ -38,4 +39,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   )
 );
 Button.displayName = "Button";
+
+// MotionButton — Button with framer-motion props (whileHover/whileTap)
+// available, for the handful of high-visibility CTAs that get a tap/hover
+// micro-interaction.
+export const MotionButton = motion(Button);
+
 export { Button, buttonVariants };

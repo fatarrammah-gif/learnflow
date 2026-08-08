@@ -1,5 +1,7 @@
 import { CheckCircle2, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { staggerContainer, fadeInUp } from "@/lib/motion";
 import type { SkillNode } from "@/types/roadmap";
 
 interface Props {
@@ -48,7 +50,12 @@ export function StepsView({ nodes, onNodeClick, hoursPerWeek = 10 }: Props) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
+    <motion.div
+      className="max-w-2xl mx-auto px-6 py-8"
+      variants={staggerContainer}
+      initial="hidden"
+      animate="visible"
+    >
       {entries.map((entry, i) => {
         const { weekIdx, node, globalIdx } = entry;
         const isFirstInWeek = i === 0 || entries[i - 1].weekIdx !== weekIdx;
@@ -57,22 +64,20 @@ export function StepsView({ nodes, onNodeClick, hoursPerWeek = 10 }: Props) {
         const isActive = globalIdx === firstIncompleteIdx;
 
         return (
-          <div key={node.id}>
+          <motion.div key={node.id} variants={fadeInUp}>
             {/* Week divider — inline between timeline items */}
             {isFirstInWeek && (
               <div className="flex items-center gap-3 mb-5 mt-2 first:mt-0">
                 <div className="ml-[11px] w-px h-4 bg-border" />
                 <div className="flex items-center gap-2 flex-1">
                   <span
-                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/70 bg-background px-2"
-                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                    className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/70 bg-background px-2 font-display"
                   >
                     Week {weekIdx + 1}
                   </span>
                   <div className="flex-1 h-px bg-border" />
                   <span
                     className="text-[11px] font-mono text-primary/60 bg-background px-1"
-                    style={{ fontFamily: 'JetBrains Mono, monospace' }}
                   >
                     {weeks[weekIdx].reduce((s, n) => s + n.estimated_hours, 0)}h
                   </span>
@@ -90,8 +95,12 @@ export function StepsView({ nodes, onNodeClick, hoursPerWeek = 10 }: Props) {
                     <CheckCircle2 size={22} className="text-primary" />
                   ) : isActive ? (
                     <>
-                      {/* Coral pulse ring on the active node */}
-                      <div className="absolute w-5 h-5 rounded-full bg-primary/20 animate-ping" />
+                      {/* Magenta pulse ring on the active node */}
+                      <motion.div
+                        className="absolute w-5 h-5 rounded-full bg-primary/20"
+                        animate={{ scale: [1, 1.6, 1], opacity: [0.6, 0, 0.6] }}
+                        transition={{ duration: 1.6, ease: "easeInOut", repeat: Infinity }}
+                      />
                       <div className="w-3 h-3 rounded-full bg-primary relative z-10" />
                     </>
                   ) : (
@@ -117,8 +126,7 @@ export function StepsView({ nodes, onNodeClick, hoursPerWeek = 10 }: Props) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div
-                      className="font-semibold text-sm text-foreground leading-snug"
-                      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                      className="font-semibold text-sm text-foreground leading-snug font-display"
                     >
                       {node.title}
                     </div>
@@ -127,8 +135,7 @@ export function StepsView({ nodes, onNodeClick, hoursPerWeek = 10 }: Props) {
                         {node.category}
                       </span>
                       <span
-                        className="text-[11px] text-primary/70"
-                        style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                        className="text-[11px] text-primary/70 font-mono"
                       >
                         {node.estimated_hours}h
                       </span>
@@ -149,9 +156,9 @@ export function StepsView({ nodes, onNodeClick, hoursPerWeek = 10 }: Props) {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         );
       })}
-    </div>
+    </motion.div>
   );
 }

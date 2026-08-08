@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { roadmapsApi } from "@/api/roadmaps";
 import { GeneratingOverlay } from "@/components/roadmap/GeneratingOverlay";
 import { TimeConflictModal } from "@/components/roadmap/TimeConflictModal";
@@ -70,19 +71,17 @@ export function RoadmapPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Top toolbar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between px-6 py-4 border-b border-border bg-card">
         <div className="flex items-baseline gap-3">
           <h1
-            className="font-bold text-base"
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            className="font-bold text-base font-display"
           >
             Your roadmap
           </h1>
           <span className="text-xs text-muted-foreground">
             {roadmap.nodes.length} skills ·{" "}
             <span
-              className="text-primary font-medium"
-              style={{ fontFamily: 'JetBrains Mono, monospace' }}
+              className="text-primary font-medium font-mono"
             >
               {roadmap.total_hours_est}h
             </span>
@@ -94,9 +93,11 @@ export function RoadmapPage() {
           {(["interactive_map", "schedule", "steps"] as RoadmapFormat[]).map((fmt) => {
             const Icon = FORMAT_ICONS[fmt];
             return (
-              <button
+              <motion.button
                 key={fmt}
                 onClick={() => setViewFormat(fmt)}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-2 text-sm transition-colors border-r border-border last:border-r-0",
                   viewFormat === fmt
@@ -106,7 +107,7 @@ export function RoadmapPage() {
               >
                 <Icon size={13} />
                 {FORMAT_LABELS[fmt]}
-              </button>
+              </motion.button>
             );
           })}
         </div>

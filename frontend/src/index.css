@@ -11,8 +11,11 @@
     --card: 0 0% 100%;               /* pure white  #FFFFFF */
     --card-foreground: 15 25% 10%;
 
-    --primary: 14 92% 58%;           /* coral       #F95B2F */
+    --primary: 340 82% 52%;          /* magenta     #F0356B */
     --primary-foreground: 0 0% 100%;
+
+    --primary-soft: 340 82% 96%;         /* soft pink surface #FDECF1 */
+    --primary-soft-foreground: 340 70% 40%;
 
     --muted: 38 28% 86%;             /* light cream #E3D8C4 */
     --muted-foreground: 30 10% 48%;  /* warm gray   #877065 */
@@ -25,14 +28,14 @@
 
     --border: 36 26% 82%;            /* warm border #D9CCBA */
     --input: 38 28% 86%;
-    --ring: 14 92% 58%;              /* coral focus */
+    --ring: 340 82% 52%;             /* magenta focus */
 
     --radius: 0.625rem;
 
     /* ── DataCamp-style dark sidebar tokens ── */
     --sidebar-bg: #0F1523;
     --sidebar-hover: rgba(255, 255, 255, 0.06);
-    --sidebar-active: rgba(255, 255, 255, 0.12);
+    --sidebar-active: rgba(240, 53, 107, 0.16);
     --sidebar-fg: rgba(255, 255, 255, 0.85);
     --sidebar-muted: rgba(255, 255, 255, 0.38);
     --sidebar-border: rgba(255, 255, 255, 0.08);
@@ -64,10 +67,5 @@
   .font-data {
     font-family: 'JetBrains Mono', monospace;
     font-feature-settings: "tnum";
-  }
-
-  /* Smooth progress bar animation helper */
-  .progress-bar {
-    transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }

@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { Button, MotionButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ROADMAP_FORMATS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -75,10 +76,10 @@ export function UploadPage() {
     <div className="min-h-full p-8 max-w-2xl mx-auto">
       {/* Page header */}
       <div className="mb-8">
-        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2 font-display">
           Step 2 of 3
         </p>
-        <h1 className="text-3xl font-bold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <h1 className="text-3xl font-bold font-display">
           Add inspiration
         </h1>
         <p className="text-muted-foreground text-sm mt-2">
@@ -86,12 +87,12 @@ export function UploadPage() {
         </p>
       </div>
 
-      {/* Two-column layout: drop zone left, URL + list right */}
-      <div className="grid grid-cols-5 gap-4 mb-8">
-        {/* Drop zone — spans 3 columns */}
+      {/* Two-column layout: drop zone left, URL + list right (stacks on mobile) */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+        {/* Drop zone — spans 3 columns on desktop */}
         <div
           className={cn(
-            "col-span-3 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all min-h-[180px]",
+            "md:col-span-3 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all min-h-[180px]",
             dragOver
               ? "border-primary bg-primary/10"
               : "border-border hover:border-primary/50 hover:bg-muted/50"
@@ -130,10 +131,10 @@ export function UploadPage() {
           />
         </div>
 
-        {/* URL input — spans 2 columns */}
-        <div className="col-span-2 flex flex-col gap-3">
+        {/* URL input — spans 2 columns on desktop */}
+        <div className="md:col-span-2 flex flex-col gap-3">
           <div className="flex-1 rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide font-display">
               Or paste a link
             </p>
             <div className="relative">
@@ -156,7 +157,7 @@ export function UploadPage() {
       {/* Uploaded references */}
       {uploads.length > 0 && (
         <div className="mb-8 space-y-2">
-          <p className="text-xs text-muted-foreground uppercase tracking-wide" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide font-display">
             References added ({uploads.length})
           </p>
           {uploads.map((u) => (
@@ -178,21 +179,23 @@ export function UploadPage() {
 
       {/* Format picker */}
       <div className="mb-8">
-        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3 font-display">
           Roadmap format
         </p>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {ROADMAP_FORMATS.map((f) => {
             const Icon = FORMAT_ICONS[f.value as keyof typeof FORMAT_ICONS];
             const isSelected = selectedFormat === f.value;
             return (
-              <button
+              <motion.button
                 key={f.value}
                 onClick={() => setSelectedFormat(f.value as RoadmapFormat)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 className={cn(
                   "flex flex-col items-start gap-2 p-4 rounded-xl border transition-all text-left",
                   isSelected
-                    ? "border-primary bg-primary/10 shadow-[0_0_16px_0px_hsl(37_92%_55%/0.15)]"
+                    ? "border-primary bg-primary/10 shadow-[0_0_16px_0px_hsl(340_82%_52%/0.15)]"
                     : "border-border bg-card hover:border-primary/40 hover:bg-muted"
                 )}
               >
@@ -203,25 +206,26 @@ export function UploadPage() {
                   </div>
                   <div className="text-xs text-muted-foreground mt-0.5 leading-snug">{f.description}</div>
                 </div>
-              </button>
+              </motion.button>
             );
           })}
         </div>
       </div>
 
       {/* Generate button */}
-      <Button
-        className="w-full h-12 text-base font-semibold"
+      <MotionButton
+        className="w-full h-12 text-base font-semibold font-display"
         onClick={handleGenerate}
         disabled={generating}
-        style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.98 }}
       >
         {generating ? (
           <><Loader2 size={16} className="animate-spin mr-2" />Generating your roadmap...</>
         ) : (
           "Generate roadmap →"
         )}
-      </Button>
+      </MotionButton>
     </div>
   );
 }

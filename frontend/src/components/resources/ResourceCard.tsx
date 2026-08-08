@@ -1,7 +1,8 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { MotionCard, CardContent } from "@/components/ui/card";
 import { CriteriaTag } from "./CriteriaTag";
 import { TimestampList } from "./TimestampList";
 import { formatTime } from "@/lib/utils";
+import { cardHover } from "@/lib/motion";
 import { Youtube } from "lucide-react";
 import type { YoutubeResource } from "@/types/resource";
 import type { Criterion } from "@/types/criteria";
@@ -17,7 +18,7 @@ export function ResourceCard({ resource, criteria }: Props) {
   const getLabel = (id: number) => criteria.find((c) => c.id === id)?.label ?? "Criterion";
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <MotionCard variant="elevated" className="hover:shadow-lg transition-shadow" {...cardHover}>
       <CardContent className="p-0">
         <div className="flex gap-3 p-3">
           {/* Video thumbnail — falls back to YouTube's default thumbnail URL */}
@@ -74,6 +75,6 @@ export function ResourceCard({ resource, criteria }: Props) {
           </div>
         )}
       </CardContent>
-    </Card>
+    </MotionCard>
   );
 }

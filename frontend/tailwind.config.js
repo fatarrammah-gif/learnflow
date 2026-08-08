@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Syne', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
@@ -20,6 +20,8 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          soft: "hsl(var(--primary-soft))",
+          "soft-foreground": "hsl(var(--primary-soft-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--muted))",

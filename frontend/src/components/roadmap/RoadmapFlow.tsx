@@ -61,7 +61,7 @@ export function RoadmapFlow({ nodes, edges, onNodeClick }: Props) {
       >
         <MiniMap
           style={{ background: "#fff", border: "1px solid hsl(36 26% 82%)" }}
-          nodeColor="hsl(14 92% 58% / 0.3)"
+          nodeColor="hsl(340 82% 52% / 0.3)"
           maskColor="hsl(38 38% 90% / 0.7)"
         />
         <Controls

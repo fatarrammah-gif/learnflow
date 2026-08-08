@@ -35,13 +35,13 @@ export function SkillNode({ data, selected }: NodeProps) {
           <div className={cn("w-1.5 h-1.5 rounded-full mt-1.5 shrink-0", colors.dot)} />
         )}
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm leading-tight text-foreground" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <div className="font-semibold text-sm leading-tight text-foreground font-display">
             {d.title}
           </div>
           <div className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1.5">
             <span>{d.category}</span>
             <span className="text-border/60">·</span>
-            <span className="font-mono text-[11px] text-primary/80" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
+            <span className="font-mono text-[11px] text-primary/80">
               {d.estimated_hours}h
             </span>
           </div>

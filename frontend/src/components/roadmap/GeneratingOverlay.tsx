@@ -1,5 +1,6 @@
-// Generating overlay — five coral chapter-marker dots animate in staggered pulses.
-// Light background version to match the new cream theme.
+import { motion } from "framer-motion";
+
+// Generating overlay — five magenta chapter-marker dots animate in staggered pulses.
 export function GeneratingOverlay() {
   return (
     <div className="fixed inset-0 bg-background/85 backdrop-blur-sm flex items-center justify-center z-50">
@@ -8,11 +9,15 @@ export function GeneratingOverlay() {
         <div className="flex items-center justify-center gap-2">
           <div className="w-12 h-px bg-border" />
           {[0, 1, 2, 3, 4].map((i) => (
-            <div
+            <motion.div
               key={i}
               className="w-2 h-2 rounded-sm bg-primary"
-              style={{
-                animation: `chapter-pulse 1.4s ease-in-out ${i * 0.18}s infinite`,
+              animate={{ opacity: [0.2, 1, 0.2], scaleY: [1, 1.7, 1] }}
+              transition={{
+                duration: 1.4,
+                ease: "easeInOut",
+                repeat: Infinity,
+                delay: i * 0.18,
               }}
             />
           ))}
@@ -20,10 +25,7 @@ export function GeneratingOverlay() {
         </div>
 
         <div>
-          <h3
-            className="font-bold text-lg text-foreground"
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-          >
+          <h3 className="font-bold text-lg text-foreground font-display">
             Building your roadmap
           </h3>
           <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
@@ -31,13 +33,6 @@ export function GeneratingOverlay() {
           </p>
         </div>
       </div>
-
-      <style>{`
-        @keyframes chapter-pulse {
-          0%, 60%, 100% { opacity: 0.2; transform: scaleY(1); }
-          30% { opacity: 1; transform: scaleY(1.7); }
-        }
-      `}</style>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { StepIndicator } from "@/components/onboarding/StepIndicator";
 import { CriteriaList } from "@/components/onboarding/CriteriaList";
 import { Button } from "@/components/ui/button";
@@ -91,7 +92,7 @@ export function OnboardingPage() {
   return (
     <div className="min-h-full p-8 max-w-xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <h1 className="text-3xl font-bold font-display">
           Set up your goal
         </h1>
         <p className="text-muted-foreground text-sm mt-2">
@@ -128,18 +129,20 @@ export function OnboardingPage() {
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Your current level</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {LEVELS.map((l) => {
                 const Icon = LEVEL_ICONS[l.value];
                 const isSelected = level === l.value;
                 return (
-                  <button
+                  <motion.button
                     key={l.value}
                     onClick={() => setLevel(l.value)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     className={cn(
                       "relative flex flex-col items-center gap-2 px-3 py-4 rounded-lg border transition-all text-center",
                       isSelected
-                        ? "border-primary bg-primary/10 shadow-[0_0_16px_0px_hsl(37_92%_55%/0.15)]"
+                        ? "border-primary bg-primary/10 shadow-[0_0_16px_0px_hsl(340_82%_52%/0.15)]"
                         : "border-border bg-card hover:border-primary/40 hover:bg-muted"
                     )}
                   >
@@ -156,7 +159,7 @@ export function OnboardingPage() {
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">{l.description}</div>
                     </div>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -227,8 +230,7 @@ export function OnboardingPage() {
           {/* Total hours display — uses JetBrains Mono for the number */}
           <div className="rounded-lg border border-border bg-card p-5 text-center">
             <div
-              className="text-5xl font-bold text-primary leading-none"
-              style={{ fontFamily: 'JetBrains Mono, monospace' }}
+              className="text-5xl font-bold text-primary leading-none font-mono"
             >
               {weeks * hpw}
               <span className="text-2xl ml-1 text-primary/70">h</span>
@@ -267,15 +269,14 @@ export function OnboardingPage() {
         <div className="space-y-4">
           {/* Summary card — two columns of key facts */}
           <div className="rounded-lg border border-border bg-card p-5 space-y-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest font-display">
               Ready to generate
             </p>
             <p className="text-foreground font-medium leading-snug">{store.goalData.title}</p>
             <div className="grid grid-cols-3 gap-3 pt-1">
               <div className="text-center">
                 <div
-                  className="text-2xl font-bold text-primary"
-                  style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                  className="text-2xl font-bold text-primary font-mono"
                 >
                   {store.goalData.time_weeks}
                 </div>
@@ -283,8 +284,7 @@ export function OnboardingPage() {
               </div>
               <div className="text-center">
                 <div
-                  className="text-2xl font-bold text-primary"
-                  style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                  className="text-2xl font-bold text-primary font-mono"
                 >
                   {store.goalData.hours_per_week}
                 </div>
@@ -292,8 +292,7 @@ export function OnboardingPage() {
               </div>
               <div className="text-center">
                 <div
-                  className="text-2xl font-bold text-primary"
-                  style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                  className="text-2xl font-bold text-primary font-mono"
                 >
                   {store.localCriteria.length}
                 </div>

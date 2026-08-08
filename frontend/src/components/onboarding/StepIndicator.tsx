@@ -36,7 +36,7 @@ export function StepIndicator({ total, current, labels }: Props) {
                   done
                     ? "w-2 h-2 bg-primary"
                     : active
-                    ? "w-3 h-3 bg-primary shadow-[0_0_8px_2px_hsl(37_92%_55%/0.5)]"
+                    ? "w-3 h-3 bg-primary shadow-[0_0_8px_2px_hsl(340_82%_52%/0.5)]"
                     : "w-2 h-2 bg-muted-foreground/40",
                 ].join(" ")}
               />
@@ -54,14 +54,13 @@ export function StepIndicator({ total, current, labels }: Props) {
             <span
               key={label}
               className={[
-                "text-xs transition-colors",
+                "text-xs transition-colors font-display",
                 active
                   ? "text-primary font-semibold"
                   : done
                   ? "text-muted-foreground"
                   : "text-muted-foreground/50",
               ].join(" ")}
-              style={{ fontFamily: 'Syne, sans-serif' }}
             >
               {label}
             </span>

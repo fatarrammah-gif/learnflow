@@ -1,13 +1,37 @@
 import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
+const cardVariants = cva("border bg-card text-card-foreground", {
+  variants: {
+    variant: {
+      // Plain flat container — settings boxes, onboarding summary, etc.
+      default: "rounded-lg shadow-sm",
+      // "Window chrome" treatment for prominent visual cards (resource
+      // videos, roadmap/dashboard highlights) — bigger radius, stronger
+      // shadow, thin magenta top accent bar.
+      elevated: "relative rounded-xl shadow-md overflow-hidden before:content-[''] before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-primary",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {}
+
 // Card — a rounded box with a subtle border and shadow
-export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)} {...props} />
+export const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, variant, ...props }, ref) => (
+    <div ref={ref} className={cn(cardVariants({ variant }), className)} {...props} />
   )
 );
 Card.displayName = "Card";
+
+// MotionCard — Card with framer-motion's props (whileHover/whileTap/variants)
+// available, for the handful of cards that get a hover-lift micro-interaction.
+export const MotionCard = motion(Card);
 
 // CardHeader — top section of the card (usually contains title + description)
 export const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(

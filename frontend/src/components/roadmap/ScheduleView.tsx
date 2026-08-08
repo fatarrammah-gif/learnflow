@@ -1,3 +1,6 @@
+import { motion } from "framer-motion";
+import { MotionCard } from "@/components/ui/card";
+import { cardHover } from "@/lib/motion";
 import type { SkillNode } from "@/types/roadmap";
 
 interface Props {
@@ -31,21 +34,16 @@ export function ScheduleView({ nodes, hoursPerWeek, onNodeClick }: Props) {
       {weeks.map((weekNodes, wi) => {
         const totalHours = weekNodes.reduce((s, n) => s + n.estimated_hours, 0);
         return (
-          <div
-            key={wi}
-            className="bg-card rounded-xl border border-border overflow-hidden shadow-sm"
-          >
-            {/* Week header — coral left-border accent */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border border-l-4 border-l-primary">
+          <MotionCard key={wi} variant="elevated" {...cardHover}>
+            {/* Week header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <span
-                className="font-bold text-sm text-foreground"
-                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                className="font-bold text-sm text-foreground font-display"
               >
                 Week {wi + 1}
               </span>
               <span
-                className="text-[12px] text-primary font-medium"
-                style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                className="text-[12px] text-primary font-medium font-mono"
               >
                 {totalHours}h
               </span>
@@ -63,32 +61,32 @@ export function ScheduleView({ nodes, hoursPerWeek, onNodeClick }: Props) {
                   <div className="w-1.5 h-1.5 rounded-full bg-primary/50 mt-1.5 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div
-                      className="text-sm font-medium text-foreground leading-snug"
-                      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                      className="text-sm font-medium text-foreground leading-snug font-display"
                     >
                       {node.title}
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] text-muted-foreground">{node.category}</span>
                       <span
-                        className="text-[10px] text-primary/70"
-                        style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                        className="text-[10px] text-primary/70 font-mono"
                       >
                         {node.estimated_hours}h
                       </span>
                     </div>
                     {/* Mini progress bar — zero until progress is logged */}
                     <div className="mt-1.5 h-1 rounded-full bg-muted overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-primary progress-bar"
-                        style={{ width: node.is_completed ? "100%" : "0%" }}
+                      <motion.div
+                        className="h-full rounded-full bg-primary"
+                        initial={{ width: 0 }}
+                        animate={{ width: node.is_completed ? "100%" : "0%" }}
+                        transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
                       />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </MotionCard>
         );
       })}
     </div>
