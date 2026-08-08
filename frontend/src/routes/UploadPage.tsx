@@ -75,10 +75,10 @@ export function UploadPage() {
     <div className="min-h-full p-8 max-w-2xl mx-auto">
       {/* Page header */}
       <div className="mb-8">
-        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>
+        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Step 2 of 3
         </p>
-        <h1 className="text-3xl font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>
+        <h1 className="text-3xl font-bold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Add inspiration
         </h1>
         <p className="text-muted-foreground text-sm mt-2">
@@ -133,7 +133,7 @@ export function UploadPage() {
         {/* URL input — spans 2 columns */}
         <div className="col-span-2 flex flex-col gap-3">
           <div className="flex-1 rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide" style={{ fontFamily: 'Syne, sans-serif' }}>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               Or paste a link
             </p>
             <div className="relative">
@@ -156,7 +156,7 @@ export function UploadPage() {
       {/* Uploaded references */}
       {uploads.length > 0 && (
         <div className="mb-8 space-y-2">
-          <p className="text-xs text-muted-foreground uppercase tracking-wide" style={{ fontFamily: 'Syne, sans-serif' }}>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             References added ({uploads.length})
           </p>
           {uploads.map((u) => (
@@ -178,7 +178,7 @@ export function UploadPage() {
 
       {/* Format picker */}
       <div className="mb-8">
-        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3" style={{ fontFamily: 'Syne, sans-serif' }}>
+        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Roadmap format
         </p>
         <div className="grid grid-cols-3 gap-3">
@@ -214,7 +214,7 @@ export function UploadPage() {
         className="w-full h-12 text-base font-semibold"
         onClick={handleGenerate}
         disabled={generating}
-        style={{ fontFamily: 'Syne, sans-serif' }}
+        style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
       >
         {generating ? (
           <><Loader2 size={16} className="animate-spin mr-2" />Generating your roadmap...</>

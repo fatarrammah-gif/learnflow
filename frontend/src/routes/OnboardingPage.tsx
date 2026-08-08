@@ -91,7 +91,7 @@ export function OnboardingPage() {
   return (
     <div className="min-h-full p-8 max-w-xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>
+        <h1 className="text-3xl font-bold" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Set up your goal
         </h1>
         <p className="text-muted-foreground text-sm mt-2">
@@ -267,7 +267,7 @@ export function OnboardingPage() {
         <div className="space-y-4">
           {/* Summary card — two columns of key facts */}
           <div className="rounded-lg border border-border bg-card p-5 space-y-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest" style={{ fontFamily: 'Syne, sans-serif' }}>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               Ready to generate
             </p>
             <p className="text-foreground font-medium leading-snug">{store.goalData.title}</p>

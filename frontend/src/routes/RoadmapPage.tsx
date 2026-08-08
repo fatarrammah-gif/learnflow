@@ -70,19 +70,27 @@ export function RoadmapPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Top toolbar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card">
         <div className="flex items-baseline gap-3">
-          <h1 className="font-bold text-base" style={{ fontFamily: 'Syne, sans-serif' }}>
+          <h1
+            className="font-bold text-base"
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          >
             Your roadmap
           </h1>
-          <span className="text-xs text-muted-foreground font-mono">
+          <span className="text-xs text-muted-foreground">
             {roadmap.nodes.length} skills ·{" "}
-            <span className="text-primary">{roadmap.total_hours_est}h</span>
+            <span
+              className="text-primary font-medium"
+              style={{ fontFamily: 'JetBrains Mono, monospace' }}
+            >
+              {roadmap.total_hours_est}h
+            </span>
           </span>
         </div>
 
-        {/* Format toggle — underline style, not filled pill */}
-        <div className="flex gap-0 border border-border rounded-lg overflow-hidden">
+        {/* Segmented format switcher — coral active state */}
+        <div className="flex border border-border rounded-lg overflow-hidden bg-muted/50">
           {(["interactive_map", "schedule", "steps"] as RoadmapFormat[]).map((fmt) => {
             const Icon = FORMAT_ICONS[fmt];
             return (
@@ -92,8 +100,8 @@ export function RoadmapPage() {
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-2 text-sm transition-colors border-r border-border last:border-r-0",
                   viewFormat === fmt
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-white text-primary font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/60"
                 )}
               >
                 <Icon size={13} />

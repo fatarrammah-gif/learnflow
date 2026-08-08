@@ -57,22 +57,22 @@ export function RoadmapFlow({ nodes, edges, onNodeClick }: Props) {
         nodeTypes={nodeTypes}
         fitView
         fitViewOptions={{ padding: 0.3 }}
-        style={{ background: "hsl(228 21% 7%)" }}  // Match --background token
+        style={{ background: "hsl(38 38% 90%)" }}   // Match warm cream --background
       >
         <MiniMap
-          style={{ background: "hsl(228 28% 14%)", border: "1px solid hsl(225 23% 23%)" }}
-          nodeColor="hsl(37 92% 55% / 0.4)"
-          maskColor="hsl(228 21% 7% / 0.7)"
+          style={{ background: "#fff", border: "1px solid hsl(36 26% 82%)" }}
+          nodeColor="hsl(14 92% 58% / 0.3)"
+          maskColor="hsl(38 38% 90% / 0.7)"
         />
         <Controls
-          style={{ background: "hsl(228 28% 14%)", border: "1px solid hsl(225 23% 23%)" }}
+          style={{ background: "#fff", border: "1px solid hsl(36 26% 82%)" }}
         />
-        {/* Dot grid — amber-tinted dots at low opacity */}
+        {/* Dot grid — warm gray dots */}
         <Background
           variant={BackgroundVariant.Dots}
           gap={20}
           size={1}
-          color="hsl(225 23% 35%)"
+          color="#C8BDA8"
         />
       </ReactFlow>
     </div>
