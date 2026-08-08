@@ -1,41 +1,73 @@
-import { cn } from "@/lib/utils";
-
 interface Props {
-  total: number;    // How many steps total
-  current: number;  // Which step we're on (1-indexed)
-  labels: string[]; // Label shown under each circle
+  total: number;
+  current: number;
+  labels: string[];
 }
 
-// Shows a row of numbered circles connected by lines
-// Past steps show a checkmark, current step has a ring highlight
+// Chapter-dot step indicator — references YouTube's chapter marker scrubber.
+// A single track with amber fill, small square dots at each chapter boundary.
 export function StepIndicator({ total, current, labels }: Props) {
+  // How far the amber fill should extend (0–100%)
+  const fillPct = ((current - 1) / (total - 1)) * 100;
+
   return (
-    <div className="flex items-center justify-center gap-2 mb-8">
-      {Array.from({ length: total }, (_, i) => {
-        const step = i + 1;
-        const done = step < current;
-        const active = step === current;
-        return (
-          <div key={step} className="flex items-center">
-            <div className="flex flex-col items-center gap-1">
-              {/* Circle: green checkmark if done, highlighted if active, grey if future */}
-              <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all",
-                done && "bg-primary text-primary-foreground",
-                active && "bg-primary text-primary-foreground ring-4 ring-primary/20",
-                !done && !active && "bg-muted text-muted-foreground"
-              )}>
-                {done ? "✓" : step}
-              </div>
-              <span className="text-xs text-muted-foreground">{labels[i]}</span>
+    <div className="mb-8">
+      {/* The scrubber track */}
+      <div className="relative h-1 bg-muted rounded-full mx-3 mb-3">
+        {/* Amber fill */}
+        <div
+          className="absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-500"
+          style={{ width: `${fillPct}%` }}
+        />
+        {/* Chapter dots at each step position */}
+        {Array.from({ length: total }, (_, i) => {
+          const pct = (i / (total - 1)) * 100;
+          const done = i + 1 < current;
+          const active = i + 1 === current;
+          return (
+            <div
+              key={i}
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-300"
+              style={{ left: `${pct}%` }}
+            >
+              <div
+                className={[
+                  "rounded-sm transition-all duration-300",
+                  done
+                    ? "w-2 h-2 bg-primary"
+                    : active
+                    ? "w-3 h-3 bg-primary shadow-[0_0_8px_2px_hsl(37_92%_55%/0.5)]"
+                    : "w-2 h-2 bg-muted-foreground/40",
+                ].join(" ")}
+              />
             </div>
-            {/* Connector line between steps */}
-            {step < total && (
-              <div className={cn("w-10 h-0.5 mx-2 mb-5", done ? "bg-primary" : "bg-muted")} />
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
+
+      {/* Labels below the track */}
+      <div className="flex justify-between px-1">
+        {labels.map((label, i) => {
+          const done = i + 1 < current;
+          const active = i + 1 === current;
+          return (
+            <span
+              key={label}
+              className={[
+                "text-xs transition-colors",
+                active
+                  ? "text-primary font-semibold"
+                  : done
+                  ? "text-muted-foreground"
+                  : "text-muted-foreground/50",
+              ].join(" ")}
+              style={{ fontFamily: 'Syne, sans-serif' }}
+            >
+              {label}
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -1,15 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  // Tell Tailwind which files to scan for class names
-  // It uses this to tree-shake (remove) unused CSS in production
   content: [
     "./index.html",
     "./src/**/*.{ts,tsx,js,jsx}",
   ],
   theme: {
     extend: {
-      // Map our CSS variables to Tailwind color names
-      // e.g. "bg-primary" → "background-color: hsl(var(--primary))"
+      fontFamily: {
+        display: ['Syne', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -21,8 +22,8 @@ export default {
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

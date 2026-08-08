@@ -88,11 +88,13 @@ export function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-full p-6 max-w-xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Set Up Your Learning Goal</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Tell us what you want to learn and we'll build you a personalized roadmap.
+    <div className="min-h-full p-8 max-w-xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>
+          Set up your goal
+        </h1>
+        <p className="text-muted-foreground text-sm mt-2">
+          Tell us what you want to learn — we'll build a roadmap and find the best YouTube resources.
         </p>
       </div>
 
@@ -207,11 +209,17 @@ export function OnboardingPage() {
               onChange={(e) => setHpw(Number(e.target.value))}
             />
           </div>
-          {/* Show the calculated total hours */}
-          <div className="rounded-lg bg-muted p-4 text-center">
-            <div className="text-3xl font-bold text-primary">{weeks * hpw}h</div>
-            <div className="text-sm text-muted-foreground mt-1">
-              Total ({weeks} weeks × {hpw}h/week)
+          {/* Total hours display — uses JetBrains Mono for the number */}
+          <div className="rounded-lg border border-border bg-card p-5 text-center">
+            <div
+              className="text-5xl font-bold text-primary leading-none"
+              style={{ fontFamily: 'JetBrains Mono, monospace' }}
+            >
+              {weeks * hpw}
+              <span className="text-2xl ml-1 text-primary/70">h</span>
+            </div>
+            <div className="text-xs text-muted-foreground mt-2 tracking-wide uppercase">
+              {weeks} weeks · {hpw}h / week
             </div>
           </div>
           <div className="flex gap-3">
