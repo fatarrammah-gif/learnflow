@@ -1,9 +1,14 @@
 """
 Gemini client for ALL AI tasks in LearnFlow:
-  - Roadmap generation (gemini-1.5-flash with JSON output)
+  - Roadmap generation (gemini-2.5-flash with JSON output)
   - Transcript scoring against user criteria (Phase 4)
 
 Uses the google-generativeai SDK.
+
+Note: gemini-1.5-flash was shut down by Google on 2025-09-29; gemini-2.0-flash
+followed on 2026-06-01. gemini-2.5-flash is the current stable flash-tier
+model — stick to it over the newer 3.x family since 3.x deprecates the
+`temperature` param this client relies on via GenerationConfig.
 """
 import json
 import re
@@ -11,7 +16,7 @@ import google.generativeai as genai
 from config import get_settings
 
 
-def _get_model(model_name: str = "gemini-1.5-flash"):
+def _get_model(model_name: str = "gemini-2.5-flash"):
     """Configure and return a Gemini model instance."""
     settings = get_settings()
     genai.configure(api_key=settings.GEMINI_API_KEY)
