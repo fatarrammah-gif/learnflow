@@ -14,11 +14,11 @@ export const LEVELS = [
   { value: "expert", label: "Expert", description: "Advanced topics only" },
 ] as const;
 
-// Colors for match level chips on resource cards
+// Colors for match level chips on resource cards — dark-mode safe
 export const MATCH_LEVEL_STYLES: Record<string, string> = {
-  high: "bg-green-100 text-green-800 border border-green-200",
-  medium: "bg-yellow-100 text-yellow-800 border border-yellow-200",
-  low: "bg-red-100 text-red-800 border border-red-200",
+  high: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
+  medium: "bg-amber-500/15 text-amber-400 border border-amber-500/30",
+  low: "bg-red-500/15 text-red-400 border border-red-500/30",
 };
 
 // Roadmap format options shown to users

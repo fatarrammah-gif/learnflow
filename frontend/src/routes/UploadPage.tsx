@@ -2,20 +2,19 @@ import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { ROADMAP_FORMATS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { uploadsApi, type Upload } from "@/api/uploads";
 import { roadmapsApi } from "@/api/roadmaps";
-import { Upload as UploadIcon, Link, Trash2, Loader2 } from "lucide-react";
+import { Upload as UploadIcon, Link, Trash2, Loader2, Map, Calendar, List } from "lucide-react";
 import type { RoadmapFormat } from "@/types/roadmap";
 
+// Icon for each format option
+const FORMAT_ICONS = { interactive_map: Map, schedule: Calendar, steps: List } as const;
+
 export function UploadPage() {
-  // useParams() reads the :goalId segment from the URL (e.g. /upload/42 → goalId = "42")
   const { goalId } = useParams<{ goalId: string }>();
   const navigate = useNavigate();
-
-  // useRef() lets us trigger the hidden <input type="file"> when the user clicks the drop zone
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [uploads, setUploads] = useState<Upload[]>([]);
@@ -23,11 +22,10 @@ export function UploadPage() {
   const [uploading, setUploading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState<RoadmapFormat>("interactive_map");
-  const [showFormatPicker, setShowFormatPicker] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
 
   const gid = Number(goalId);
 
-  // Called when the user selects a file via the file picker
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -39,12 +37,10 @@ export function UploadPage() {
       alert("Upload failed. Make sure the backend is running.");
     } finally {
       setUploading(false);
-      // Reset the input so the same file can be uploaded again if needed
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
-  // Called when the user adds a URL
   const handleUrlAdd = async () => {
     if (!urlInput.trim()) return;
     setUploading(true);
@@ -64,7 +60,6 @@ export function UploadPage() {
     setUploads((prev) => prev.filter((u) => u.id !== id));
   };
 
-  // Kick off AI roadmap generation and navigate to the roadmap page
   const handleGenerate = async () => {
     setGenerating(true);
     try {
@@ -77,107 +72,156 @@ export function UploadPage() {
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-1">Add Inspiration (Optional)</h1>
-      <p className="text-muted-foreground text-sm mb-6">
-        Upload a roadmap image, PDF, webpage, or YouTube link as inspiration for the AI.
-        This step is optional — you can skip it.
-      </p>
-
-      {/* File drop zone — clicking it opens the hidden file input */}
-      <div
-        className="border-2 border-dashed rounded-lg p-8 text-center mb-4 cursor-pointer hover:border-primary transition-colors"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <UploadIcon className="mx-auto mb-2 text-muted-foreground" size={28} />
-        <p className="text-sm text-muted-foreground">Click to upload a file (PDF, image, doc)</p>
-        {/* Hidden file input — triggered programmatically by the drop zone click */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          className="hidden"
-          accept=".pdf,.png,.jpg,.jpeg,.gif,.doc,.docx"
-          onChange={handleFileChange}
-        />
+    <div className="min-h-full p-8 max-w-2xl mx-auto">
+      {/* Page header */}
+      <div className="mb-8">
+        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2" style={{ fontFamily: 'Syne, sans-serif' }}>
+          Step 2 of 3
+        </p>
+        <h1 className="text-3xl font-bold" style={{ fontFamily: 'Syne, sans-serif' }}>
+          Add inspiration
+        </h1>
+        <p className="text-muted-foreground text-sm mt-2">
+          Share a roadmap image, YouTube link, or webpage — the AI will use it as a reference. Skip if you don't have one.
+        </p>
       </div>
 
-      {/* URL input row */}
-      <div className="flex gap-2 mb-6">
-        <div className="relative flex-1">
-          <Link size={14} className="absolute left-3 top-3 text-muted-foreground" />
-          <Input
-            className="pl-8"
-            placeholder="Paste a YouTube link or webpage URL"
-            value={urlInput}
-            onChange={(e) => setUrlInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleUrlAdd()}
+      {/* Two-column layout: drop zone left, URL + list right */}
+      <div className="grid grid-cols-5 gap-4 mb-8">
+        {/* Drop zone — spans 3 columns */}
+        <div
+          className={cn(
+            "col-span-3 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all min-h-[180px]",
+            dragOver
+              ? "border-primary bg-primary/10"
+              : "border-border hover:border-primary/50 hover:bg-muted/50"
+          )}
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragOver(false);
+            const file = e.dataTransfer.files[0];
+            if (file && fileInputRef.current) {
+              // Simulate file input change
+              const dt = new DataTransfer();
+              dt.items.add(file);
+              fileInputRef.current.files = dt.files;
+              fileInputRef.current.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+          }}
+        >
+          {uploading ? (
+            <Loader2 size={24} className="animate-spin text-primary" />
+          ) : (
+            <UploadIcon size={24} className="text-muted-foreground" />
+          )}
+          <div className="text-center px-4">
+            <p className="text-sm font-medium text-foreground">Drop a file here</p>
+            <p className="text-xs text-muted-foreground mt-0.5">PDF · image · doc</p>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            accept=".pdf,.png,.jpg,.jpeg,.gif,.doc,.docx"
+            onChange={handleFileChange}
           />
         </div>
-        <Button variant="outline" onClick={handleUrlAdd} disabled={uploading}>
-          {uploading ? <Loader2 size={14} className="animate-spin" /> : "Add"}
-        </Button>
+
+        {/* URL input — spans 2 columns */}
+        <div className="col-span-2 flex flex-col gap-3">
+          <div className="flex-1 rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide" style={{ fontFamily: 'Syne, sans-serif' }}>
+              Or paste a link
+            </p>
+            <div className="relative">
+              <Link size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="pl-8 text-sm"
+                placeholder="youtube.com/watch?v=..."
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleUrlAdd()}
+              />
+            </div>
+            <Button variant="outline" size="sm" onClick={handleUrlAdd} disabled={uploading} className="w-full">
+              Add link
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* List of uploaded references */}
+      {/* Uploaded references */}
       {uploads.length > 0 && (
-        <div className="space-y-2 mb-6">
-          <p className="text-sm font-medium">Added references ({uploads.length})</p>
+        <div className="mb-8 space-y-2">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide" style={{ fontFamily: 'Syne, sans-serif' }}>
+            References added ({uploads.length})
+          </p>
           {uploads.map((u) => (
-            <div key={u.id} className="flex items-center gap-2 p-2 rounded border">
-              <span className="text-xs px-1.5 py-0.5 bg-muted rounded">{u.upload_type}</span>
-              <span className="flex-1 text-sm truncate">{u.original_url ?? u.file_path}</span>
-              <button onClick={() => handleDelete(u.id)} className="text-muted-foreground hover:text-destructive">
-                <Trash2 size={14} />
+            <div key={u.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-border bg-card">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground uppercase tracking-wide font-mono">
+                {u.upload_type}
+              </span>
+              <span className="flex-1 text-sm text-foreground truncate">{u.original_url ?? u.file_path}</span>
+              <button
+                onClick={() => handleDelete(u.id)}
+                className="text-muted-foreground hover:text-destructive transition-colors"
+              >
+                <Trash2 size={13} />
               </button>
             </div>
           ))}
         </div>
       )}
 
-      {/* Format picker — appears when user clicks "Choose Format" */}
-      {showFormatPicker && (
-        <div className="mb-4 space-y-2">
-          <p className="text-sm font-medium">Choose roadmap format</p>
-          <div className="space-y-2">
-            {ROADMAP_FORMATS.map((f) => (
-              <Card
+      {/* Format picker */}
+      <div className="mb-8">
+        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3" style={{ fontFamily: 'Syne, sans-serif' }}>
+          Roadmap format
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          {ROADMAP_FORMATS.map((f) => {
+            const Icon = FORMAT_ICONS[f.value as keyof typeof FORMAT_ICONS];
+            const isSelected = selectedFormat === f.value;
+            return (
+              <button
                 key={f.value}
-                className={cn(
-                  "cursor-pointer hover:border-primary transition-all",
-                  selectedFormat === f.value && "border-primary bg-primary/5"
-                )}
                 onClick={() => setSelectedFormat(f.value as RoadmapFormat)}
+                className={cn(
+                  "flex flex-col items-start gap-2 p-4 rounded-xl border transition-all text-left",
+                  isSelected
+                    ? "border-primary bg-primary/10 shadow-[0_0_16px_0px_hsl(37_92%_55%/0.15)]"
+                    : "border-border bg-card hover:border-primary/40 hover:bg-muted"
+                )}
               >
-                <CardContent className="p-3">
-                  <div className="font-medium text-sm">{f.label}</div>
-                  <div className="text-xs text-muted-foreground">{f.description}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                <Icon size={18} className={isSelected ? "text-primary" : "text-muted-foreground"} />
+                <div>
+                  <div className={cn("font-semibold text-sm", isSelected ? "text-primary" : "text-foreground")}>
+                    {f.label}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-0.5 leading-snug">{f.description}</div>
+                </div>
+              </button>
+            );
+          })}
         </div>
-      )}
-
-      {/* Action buttons */}
-      <div className="flex gap-3">
-        {!showFormatPicker ? (
-          <>
-            <Button variant="outline" className="flex-1" onClick={handleGenerate} disabled={generating}>
-              Skip & Generate
-            </Button>
-            <Button className="flex-1" onClick={() => setShowFormatPicker(true)}>
-              Choose Format →
-            </Button>
-          </>
-        ) : (
-          <Button className="w-full" onClick={handleGenerate} disabled={generating}>
-            {generating
-              ? <><Loader2 size={14} className="animate-spin mr-2" />Generating...</>
-              : "Generate Roadmap →"
-            }
-          </Button>
-        )}
       </div>
+
+      {/* Generate button */}
+      <Button
+        className="w-full h-12 text-base font-semibold"
+        onClick={handleGenerate}
+        disabled={generating}
+        style={{ fontFamily: 'Syne, sans-serif' }}
+      >
+        {generating ? (
+          <><Loader2 size={16} className="animate-spin mr-2" />Generating your roadmap...</>
+        ) : (
+          "Generate roadmap →"
+        )}
+      </Button>
     </div>
   );
 }

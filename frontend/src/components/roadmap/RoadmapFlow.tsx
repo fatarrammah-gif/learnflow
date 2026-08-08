@@ -48,19 +48,32 @@ export function RoadmapFlow({ nodes, edges, onNodeClick }: Props) {
   const [rfEdges, , onEdgesChange] = useEdgesState(flowEdges);
 
   return (
-    <div className="w-full h-[calc(100vh-180px)] rounded-lg border bg-muted/20">
+    <div className="w-full h-[calc(100vh-180px)] rounded-xl border border-border overflow-hidden">
       <ReactFlow
         nodes={rfNodes}
         edges={rfEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
-        fitView                              // Auto-zoom to show all nodes
+        fitView
         fitViewOptions={{ padding: 0.3 }}
+        style={{ background: "hsl(228 21% 7%)" }}  // Match --background token
       >
-        <MiniMap />      {/* Small overview map in the corner */}
-        <Controls />     {/* Zoom in/out buttons */}
-        <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
+        <MiniMap
+          style={{ background: "hsl(228 28% 14%)", border: "1px solid hsl(225 23% 23%)" }}
+          nodeColor="hsl(37 92% 55% / 0.4)"
+          maskColor="hsl(228 21% 7% / 0.7)"
+        />
+        <Controls
+          style={{ background: "hsl(228 28% 14%)", border: "1px solid hsl(225 23% 23%)" }}
+        />
+        {/* Dot grid — amber-tinted dots at low opacity */}
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={20}
+          size={1}
+          color="hsl(225 23% 35%)"
+        />
       </ReactFlow>
     </div>
   );

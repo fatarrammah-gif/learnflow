@@ -69,17 +69,20 @@ export function RoadmapPage() {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Top toolbar: title info on left, format switcher on right */}
-      <div className="flex items-center justify-between px-6 py-3 border-b">
-        <div>
-          <h1 className="font-semibold">Your Learning Roadmap</h1>
-          <p className="text-xs text-muted-foreground">
-            {roadmap.nodes.length} skills · ~{roadmap.total_hours_est}h total
-          </p>
+      {/* Top toolbar */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex items-baseline gap-3">
+          <h1 className="font-bold text-base" style={{ fontFamily: 'Syne, sans-serif' }}>
+            Your roadmap
+          </h1>
+          <span className="text-xs text-muted-foreground font-mono">
+            {roadmap.nodes.length} skills ·{" "}
+            <span className="text-primary">{roadmap.total_hours_est}h</span>
+          </span>
         </div>
 
-        {/* Format toggle: Map / Schedule / Steps */}
-        <div className="flex gap-1 bg-muted rounded-md p-1">
+        {/* Format toggle — underline style, not filled pill */}
+        <div className="flex gap-0 border border-border rounded-lg overflow-hidden">
           {(["interactive_map", "schedule", "steps"] as RoadmapFormat[]).map((fmt) => {
             const Icon = FORMAT_ICONS[fmt];
             return (
@@ -87,13 +90,13 @@ export function RoadmapPage() {
                 key={fmt}
                 onClick={() => setViewFormat(fmt)}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors",
+                  "flex items-center gap-1.5 px-3 py-2 text-sm transition-colors border-r border-border last:border-r-0",
                   viewFormat === fmt
-                    ? "bg-background shadow-sm font-medium"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
-                <Icon size={14} />
+                <Icon size={13} />
                 {FORMAT_LABELS[fmt]}
               </button>
             );

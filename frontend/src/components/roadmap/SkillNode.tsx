@@ -2,47 +2,55 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Each category gets a different border/background color so nodes are visually grouped
-const CATEGORY_COLORS: Record<string, string> = {
-  Foundations: "border-blue-400 bg-blue-50",
-  "Core Concepts": "border-purple-400 bg-purple-50",
-  Advanced: "border-orange-400 bg-orange-50",
-  Projects: "border-green-400 bg-green-50",
+// Dark-mode category colors — tinted borders and semi-transparent fills
+const CATEGORY_COLORS: Record<string, { border: string; bg: string; dot: string }> = {
+  Foundations:    { border: "border-blue-400/60",   bg: "bg-blue-500/10",   dot: "bg-blue-400" },
+  "Core Concepts":{ border: "border-violet-400/60", bg: "bg-violet-500/10", dot: "bg-violet-400" },
+  Advanced:       { border: "border-amber-400/60",  bg: "bg-amber-500/10",  dot: "bg-amber-400" },
+  Projects:       { border: "border-emerald-400/60",bg: "bg-emerald-500/10",dot: "bg-emerald-400" },
 };
 
-// NodeProps is the type React Flow passes to every custom node component
-// `data` contains whatever we put in the node's data field when building the flow
+const FALLBACK = { border: "border-border", bg: "bg-card", dot: "bg-muted-foreground" };
+
 export function SkillNode({ data, selected }: NodeProps) {
   const d = data as any;
-  // Fall back to grey if the category doesn't match any key above
-  const color = CATEGORY_COLORS[d.category] ?? "border-gray-300 bg-white";
+  const colors = CATEGORY_COLORS[d.category] ?? FALLBACK;
 
   return (
     <div
       className={cn(
-        "px-4 py-3 rounded-lg border-2 shadow-sm cursor-pointer min-w-[160px] max-w-[200px] transition-all",
-        color,
-        selected && "ring-2 ring-primary ring-offset-2",   // Blue ring when selected
-        d.is_completed && "opacity-60"                      // Dimmed when done
+        "px-4 py-3 rounded-lg border cursor-pointer min-w-[160px] max-w-[210px] transition-all",
+        colors.border, colors.bg,
+        selected && "ring-2 ring-primary ring-offset-2 ring-offset-background",
+        d.is_completed && "opacity-50"
       )}
       onClick={() => d.onNodeClick?.(d.nodeId)}
     >
-      {/* Handle = the connection point at the top of the node (input / target) */}
-      <Handle type="target" position={Position.Top} />
+      <Handle type="target" position={Position.Top} className="!bg-border !border-border" />
 
       <div className="flex items-start gap-2">
-        {d.is_completed && <CheckCircle2 size={14} className="text-green-500 mt-0.5 shrink-0" />}
+        {d.is_completed ? (
+          <CheckCircle2 size={13} className="text-emerald-400 mt-0.5 shrink-0" />
+        ) : (
+          /* Category dot */
+          <div className={cn("w-1.5 h-1.5 rounded-full mt-1.5 shrink-0", colors.dot)} />
+        )}
         <div className="flex-1 min-w-0">
-          <div className="font-medium text-sm leading-tight">{d.title}</div>
-          <div className="text-xs text-muted-foreground mt-1">
-            <span className="bg-white/60 rounded px-1">{d.category}</span>
-            {" · "}{d.estimated_hours}h
+          <div className="font-medium text-sm leading-tight text-foreground">{d.title}</div>
+          <div className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1.5">
+            <span>{d.category}</span>
+            <span className="text-border">·</span>
+            <span
+              className="font-mono text-[11px]"
+              style={{ fontFamily: 'JetBrains Mono, monospace' }}
+            >
+              {d.estimated_hours}h
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Handle = the connection point at the bottom (output / source) */}
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="source" position={Position.Bottom} className="!bg-border !border-border" />
     </div>
   );
 }

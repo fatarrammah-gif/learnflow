@@ -6,14 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { useGoalStore } from "@/store/goalStore";
 import { goalsApi } from "@/api/goals";
 import { criteriaApi } from "@/api/criteria";
 import { LEVELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Sprout, Zap, Flame } from "lucide-react";
 import type { Level } from "@/types/goal";
+
+const LEVEL_ICONS = { beginner: Sprout, intermediate: Zap, expert: Flame } as const;
 
 const STEP_LABELS = ["Goal", "Time", "Criteria", "Save"];
 
@@ -127,23 +128,37 @@ export function OnboardingPage() {
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Your current level</label>
-            {/* Three clickable cards — clicking one sets the level */}
             <div className="grid grid-cols-3 gap-2">
-              {LEVELS.map((l) => (
-                <Card
-                  key={l.value}
-                  className={cn(
-                    "cursor-pointer hover:border-primary transition-all",
-                    level === l.value && "border-primary bg-primary/5"
-                  )}
-                  onClick={() => setLevel(l.value)}
-                >
-                  <CardContent className="p-3 text-center">
-                    <div className="font-medium text-sm">{l.label}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5">{l.description}</div>
-                  </CardContent>
-                </Card>
-              ))}
+              {LEVELS.map((l) => {
+                const Icon = LEVEL_ICONS[l.value];
+                const isSelected = level === l.value;
+                return (
+                  <button
+                    key={l.value}
+                    onClick={() => setLevel(l.value)}
+                    className={cn(
+                      "relative flex flex-col items-center gap-2 px-3 py-4 rounded-lg border transition-all text-center",
+                      isSelected
+                        ? "border-primary bg-primary/10 shadow-[0_0_16px_0px_hsl(37_92%_55%/0.15)]"
+                        : "border-border bg-card hover:border-primary/40 hover:bg-muted"
+                    )}
+                  >
+                    <Icon
+                      size={20}
+                      className={isSelected ? "text-primary" : "text-muted-foreground"}
+                    />
+                    <div>
+                      <div className={cn(
+                        "font-semibold text-sm",
+                        isSelected ? "text-primary" : "text-foreground"
+                      )}>
+                        {l.label}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{l.description}</div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -250,23 +265,43 @@ export function OnboardingPage() {
       {/* ── Step 4: Summary + Save ── */}
       {store.currentStep === 4 && (
         <div className="space-y-4">
-          <div className="rounded-lg border p-4 space-y-3">
-            <h3 className="font-semibold">Ready to generate your roadmap</h3>
-            <div className="text-sm space-y-1">
-              <div><span className="text-muted-foreground">Goal:</span> {store.goalData.title}</div>
-              <div><span className="text-muted-foreground">Level:</span> {store.goalData.level}</div>
-              <div>
-                <span className="text-muted-foreground">Time:</span>{" "}
-                {store.goalData.time_weeks} weeks · {store.goalData.hours_per_week}h/week
+          {/* Summary card — two columns of key facts */}
+          <div className="rounded-lg border border-border bg-card p-5 space-y-4">
+            <p className="text-xs text-muted-foreground uppercase tracking-widest" style={{ fontFamily: 'Syne, sans-serif' }}>
+              Ready to generate
+            </p>
+            <p className="text-foreground font-medium leading-snug">{store.goalData.title}</p>
+            <div className="grid grid-cols-3 gap-3 pt-1">
+              <div className="text-center">
+                <div
+                  className="text-2xl font-bold text-primary"
+                  style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                >
+                  {store.goalData.time_weeks}
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">weeks</div>
               </div>
-              <div>
-                <span className="text-muted-foreground">Criteria:</span>{" "}
-                {store.localCriteria.length} evaluation criteria
+              <div className="text-center">
+                <div
+                  className="text-2xl font-bold text-primary"
+                  style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                >
+                  {store.goalData.hours_per_week}
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">hrs / week</div>
+              </div>
+              <div className="text-center">
+                <div
+                  className="text-2xl font-bold text-primary"
+                  style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                >
+                  {store.localCriteria.length}
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">criteria</div>
               </div>
             </div>
           </div>
 
-          {/* Show backend error message if save fails */}
           {error && <p className="text-sm text-destructive">{error}</p>}
 
           <div className="flex gap-3">
@@ -274,7 +309,7 @@ export function OnboardingPage() {
             <Button onClick={saveGoal} disabled={saving} className="flex-1">
               {saving
                 ? <><Loader2 size={14} className="animate-spin mr-2" />Saving...</>
-                : "Save & Continue →"
+                : "Save & continue →"
               }
             </Button>
           </div>
