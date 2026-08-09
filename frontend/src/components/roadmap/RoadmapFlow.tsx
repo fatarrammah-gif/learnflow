@@ -26,10 +26,12 @@ interface Props {
 // above/below a center line, so consecutive nodes read as one snaking path.
 // How far a step sits from the center line scales with its estimated_hours,
 // so a longer step visibly swings higher/lower than a quick one.
-const HORIZONTAL_SPACING = 300;
-const MIN_AMPLITUDE = 60;
-const MAX_AMPLITUDE = 190;
-const CENTER_Y = 260;
+// Spacing scales with the card size (SkillNode is ~2.5x its original size) so
+// consecutive stops don't overlap.
+const HORIZONTAL_SPACING = 800;
+const MIN_AMPLITUDE = 90;
+const MAX_AMPLITUDE = 280;
+const CENTER_Y = 320;
 
 // Note: `edges` (the backend's dependency graph) is intentionally unused for
 // rendering — the road is drawn as one continuous path through `nodes` in
@@ -123,6 +125,7 @@ export function RoadmapFlow({ nodes, onToggleComplete }: Props) {
         edgeTypes={edgeTypes}
         fitView
         fitViewOptions={{ padding: 0.3 }}
+        minZoom={0.1}
         style={{ background: "hsl(38 38% 90%)" }}   // Match warm cream --background
       >
         <MiniMap

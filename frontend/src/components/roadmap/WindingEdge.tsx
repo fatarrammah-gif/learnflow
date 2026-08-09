@@ -10,7 +10,7 @@ interface RoadPoint {
 // starts curving toward the next one — two points at the same height per
 // stop instead of a single bend-point, so the road reads as straight right
 // where a destination sits.
-const STRAIGHT_HALF = 45;
+const STRAIGHT_HALF = 120;
 
 // WindingEdge — renders the ENTIRE roadmap as one continuous paved road
 // through every step in sequence (via `data.points`), not a separate curve
@@ -54,16 +54,16 @@ export function WindingEdge({ data }: EdgeProps) {
   return (
     <g>
       {/* Lighter-gray outer boundary */}
-      <path d={fullPath} fill="none" stroke="#8a8a8a" strokeWidth={96} strokeLinecap="round" strokeLinejoin="round" />
+      <path d={fullPath} fill="none" stroke="#8a8a8a" strokeWidth={67} strokeLinecap="round" strokeLinejoin="round" />
       {/* Dark asphalt */}
-      <path d={fullPath} fill="none" stroke="#2b2b2b" strokeWidth={72} strokeLinecap="round" strokeLinejoin="round" />
+      <path d={fullPath} fill="none" stroke="#2b2b2b" strokeWidth={50} strokeLinecap="round" strokeLinejoin="round" />
       {/* White dashed center line */}
       <path
         d={fullPath}
         fill="none"
         stroke="#ffffff"
-        strokeWidth={12}
-        strokeDasharray="36 36"
+        strokeWidth={8}
+        strokeDasharray="25 25"
         strokeLinecap="butt"
         strokeLinejoin="round"
       />
@@ -74,9 +74,9 @@ export function WindingEdge({ data }: EdgeProps) {
           d={seg}
           fill="none"
           stroke="hsl(340 82% 52% / 0.8)"
-          strokeWidth={18}
+          strokeWidth={13}
           strokeLinecap="round"
-          transform="translate(0, 54)"
+          transform="translate(0, 38)"
         />
       ))}
     </g>

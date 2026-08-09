@@ -34,7 +34,7 @@ export function SkillNode({ data, selected }: NodeProps) {
   return (
     <div
       className={cn(
-        "relative px-4 py-3 rounded-xl border-2 cursor-pointer min-w-[160px] max-w-[210px] shadow-sm transition-all bg-white",
+        "relative px-[40px] py-[30px] rounded-[30px] border-[5px] cursor-pointer min-w-[400px] max-w-[525px] shadow-sm transition-all bg-white",
         colors.border,
         selected && "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-md",
         d.is_completed && "opacity-50"
@@ -43,7 +43,7 @@ export function SkillNode({ data, selected }: NodeProps) {
     >
       {/* Square destination marker — milestone marker along the winding road */}
       <div
-        className="absolute left-1/2 -translate-x-1/2 -top-8 w-8 h-8 rounded-md shadow-md border-2 border-white flex items-center justify-center text-xs font-bold text-white"
+        className="absolute left-1/2 -translate-x-1/2 -top-[80px] w-[80px] h-[80px] rounded-2xl shadow-md border-4 border-white flex items-center justify-center text-2xl font-bold text-white"
         style={{ background: pinColor }}
       >
         {stepNumber}
@@ -51,7 +51,7 @@ export function SkillNode({ data, selected }: NodeProps) {
 
       <Handle type="target" position={Position.Left} className="!bg-border !border-border !w-2 !h-2" />
 
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-5">
         <button
           type="button"
           className="shrink-0 -m-1 p-1"
@@ -62,19 +62,19 @@ export function SkillNode({ data, selected }: NodeProps) {
           }}
         >
           {d.is_completed ? (
-            <CheckCircle2 size={13} className="text-green-500 mt-0.5" />
+            <CheckCircle2 size={33} className="text-green-500 mt-0.5" />
           ) : (
-            <div className={cn("w-1.5 h-1.5 rounded-full mt-1.5", colors.dot)} />
+            <div className={cn("w-[15px] h-[15px] rounded-full mt-[15px]", colors.dot)} />
           )}
         </button>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm leading-tight text-foreground font-display">
+          <div className="font-semibold text-[35px] leading-tight text-foreground font-display">
             {d.title}
           </div>
-          <div className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1.5">
+          <div className="text-[30px] text-muted-foreground mt-4 flex items-center gap-3">
             <span>{d.category}</span>
             <span className="text-border/60">·</span>
-            <span className="font-mono text-[11px] text-primary/80">
+            <span className="font-mono text-[28px] text-primary/80">
               {d.estimated_hours}h
             </span>
           </div>
