@@ -10,7 +10,7 @@ interface RoadPoint {
 // starts curving toward the next one — two points at the same height per
 // stop instead of a single bend-point, so the road reads as straight right
 // where a destination sits.
-const STRAIGHT_HALF = 120;
+const STRAIGHT_HALF = 180;
 
 // WindingEdge — renders the ENTIRE roadmap as one continuous paved road
 // through every step in sequence (via `data.points`), not a separate curve

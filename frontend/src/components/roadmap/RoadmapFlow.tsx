@@ -27,9 +27,9 @@ interface Props {
 // at BASELINE_Y (lowest point), the longest sits MAX_RISE above that, and
 // everything else is interpolated between — so the road's elevation reads
 // as a literal time profile, not an arbitrary alternating zigzag.
-// Spacing scales with the card size (SkillNode is ~2.5x its original size) so
+// Spacing scales with the card size (SkillNode is ~3.75x its original size) so
 // consecutive stops don't overlap.
-const HORIZONTAL_SPACING = 800;
+const HORIZONTAL_SPACING = 1200;
 const BASELINE_Y = 550;
 const MAX_RISE = 1140; // 3x the elevation spread between shortest and longest step
 

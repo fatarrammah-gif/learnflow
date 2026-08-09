@@ -1,17 +1,12 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-// Light-mode warm category colors — soft tints on white, colored borders
-const CATEGORY_COLORS: Record<string, { border: string; bg: string; dot: string }> = {
-  Foundations:     { border: "border-blue-300",   bg: "bg-blue-50",   dot: "bg-blue-400" },
-  "Core Concepts": { border: "border-violet-300", bg: "bg-violet-50", dot: "bg-violet-400" },
-  Advanced:        { border: "border-orange-300", bg: "bg-orange-50", dot: "bg-orange-400" },
-  Projects:        { border: "border-green-300",  bg: "bg-green-50",  dot: "bg-green-500" },
-};
+import { cardHover } from "@/lib/motion";
 
 // Rainbow pin palette, rotating one color per step (not tied to category) —
-// matches the reference roadmap infographic's varied map-pin colors.
+// matches the reference roadmap infographic's varied map-pin colors. The
+// card's border/accent uses the same color as its number marker so the two
+// read as one unit.
 const PIN_RAINBOW = [
   "#2f69aa", // blue
   "#169fc9", // cyan
@@ -23,27 +18,27 @@ const PIN_RAINBOW = [
   "#7b2862", // purple
 ];
 
-const FALLBACK = { border: "border-border", bg: "bg-card", dot: "bg-muted-foreground" };
-
 export function SkillNode({ data, selected }: NodeProps) {
   const d = data as any;
-  const colors = CATEGORY_COLORS[d.category] ?? FALLBACK;
   const stepNumber: number = d.stepNumber ?? 1;
   const pinColor = PIN_RAINBOW[(stepNumber - 1) % PIN_RAINBOW.length];
 
   return (
-    <div
-      className={cn(
-        "relative px-[40px] py-[30px] rounded-[30px] border-[5px] cursor-pointer min-w-[400px] max-w-[525px] shadow-sm transition-all bg-white",
-        colors.border,
-        selected && "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-md",
-        d.is_completed && "opacity-50"
-      )}
+    <motion.div
+      className="relative px-[60px] py-[45px] rounded-[45px] border-[8px] cursor-pointer min-w-[600px] max-w-[788px] shadow-lg bg-white"
+      style={{ borderColor: pinColor, opacity: d.is_completed ? 0.5 : 1 }}
       onClick={() => d.onNodeClick?.(d.nodeId)}
+      {...cardHover}
+      animate={{
+        boxShadow: selected
+          ? "0 8px 24px -4px rgb(0 0 0 / 0.25)"
+          : "0 4px 14px -2px rgb(0 0 0 / 0.12)",
+      }}
     >
-      {/* Square destination marker — milestone marker along the winding road */}
+      {/* Square destination marker — the "node" for this location, same
+          color as the card border so they read as one unit */}
       <div
-        className="absolute left-1/2 -translate-x-1/2 -top-[80px] w-[80px] h-[80px] rounded-2xl shadow-md border-4 border-white flex items-center justify-center text-2xl font-bold text-white"
+        className="absolute left-1/2 -translate-x-1/2 -top-[120px] w-[120px] h-[120px] rounded-[24px] shadow-md border-[6px] border-white flex items-center justify-center text-[36px] font-bold text-white"
         style={{ background: pinColor }}
       >
         {stepNumber}
@@ -51,7 +46,7 @@ export function SkillNode({ data, selected }: NodeProps) {
 
       <Handle type="target" position={Position.Left} className="!bg-border !border-border !w-2 !h-2" />
 
-      <div className="flex items-start gap-5">
+      <div className="flex items-start gap-[30px]">
         <button
           type="button"
           className="shrink-0 -m-1 p-1"
@@ -62,19 +57,22 @@ export function SkillNode({ data, selected }: NodeProps) {
           }}
         >
           {d.is_completed ? (
-            <CheckCircle2 size={33} className="text-green-500 mt-0.5" />
+            <CheckCircle2 size={50} className="text-green-500 mt-0.5" />
           ) : (
-            <div className={cn("w-[15px] h-[15px] rounded-full mt-[15px]", colors.dot)} />
+            <div
+              className="w-[23px] h-[23px] rounded-full mt-[23px]"
+              style={{ background: pinColor }}
+            />
           )}
         </button>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-[35px] leading-tight text-foreground font-display">
+          <div className="font-semibold text-[52px] leading-tight text-foreground font-display">
             {d.title}
           </div>
-          <div className="text-[30px] text-muted-foreground mt-4 flex items-center gap-3">
+          <div className="text-[45px] text-muted-foreground mt-6 flex items-center gap-[18px]">
             <span>{d.category}</span>
             <span className="text-border/60">·</span>
-            <span className="font-mono text-[28px] text-primary/80">
+            <span className="font-mono text-[42px] text-primary/80">
               {d.estimated_hours}h
             </span>
           </div>
@@ -82,6 +80,6 @@ export function SkillNode({ data, selected }: NodeProps) {
       </div>
 
       <Handle type="source" position={Position.Right} className="!bg-border !border-border !w-2 !h-2" />
-    </div>
+    </motion.div>
   );
 }
