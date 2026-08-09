@@ -22,16 +22,16 @@ interface Props {
   onToggleComplete: (nodeId: number) => void;
 }
 
-// Winding-road layout constants — a horizontal zigzag, node index alternating
-// above/below a center line, so consecutive nodes read as one snaking path.
-// How far a step sits from the center line scales with its estimated_hours,
-// so a longer step visibly swings higher/lower than a quick one.
+// Winding-road layout constants. Each step's vertical level is a direct
+// function of its estimated_hours — the shortest step in the roadmap sits
+// at BASELINE_Y (lowest point), the longest sits MAX_RISE above that, and
+// everything else is interpolated between — so the road's elevation reads
+// as a literal time profile, not an arbitrary alternating zigzag.
 // Spacing scales with the card size (SkillNode is ~2.5x its original size) so
 // consecutive stops don't overlap.
 const HORIZONTAL_SPACING = 800;
-const MIN_AMPLITUDE = 90;
-const MAX_AMPLITUDE = 280;
-const CENTER_Y = 320;
+const BASELINE_Y = 550;
+const MAX_RISE = 380;
 
 // Note: `edges` (the backend's dependency graph) is intentionally unused for
 // rendering — the road is drawn as one continuous path through `nodes` in
@@ -48,15 +48,16 @@ export function RoadmapFlow({ nodes, onToggleComplete }: Props) {
     setPreviewNode(nodes.find((n) => n.id === nodeId) ?? null);
   };
 
-  // How far this step's pin sits from the road's center line, scaled by its
-  // estimated_hours relative to the shortest/longest step in this roadmap.
+  // This step's vertical level: the shortest step in the roadmap sits at
+  // BASELINE_Y, the longest sits MAX_RISE above it, everything else in
+  // between — lower on screen = shorter time, higher = longer time.
   const hoursList = nodes.map((n) => n.estimated_hours);
   const minHours = Math.min(...hoursList);
   const maxHours = Math.max(...hoursList);
-  const amplitudeFor = (hours: number) => {
-    if (maxHours === minHours) return (MIN_AMPLITUDE + MAX_AMPLITUDE) / 2;
+  const heightFor = (hours: number) => {
+    if (maxHours === minHours) return BASELINE_Y - MAX_RISE / 2;
     const t = (hours - minHours) / (maxHours - minHours);
-    return MIN_AMPLITUDE + t * (MAX_AMPLITUDE - MIN_AMPLITUDE);
+    return BASELINE_Y - t * MAX_RISE;
   };
 
   // Convert our backend data format into the shape React Flow expects
@@ -68,10 +69,7 @@ export function RoadmapFlow({ nodes, onToggleComplete }: Props) {
     // don't use anymore now that the road is the layout.
     position: {
       x: index * HORIZONTAL_SPACING,
-      y:
-        index % 2 === 0
-          ? CENTER_Y - amplitudeFor(n.estimated_hours)
-          : CENTER_Y + amplitudeFor(n.estimated_hours),
+      y: heightFor(n.estimated_hours),
     },
     // Everything in `data` is available inside the SkillNode component as `data.xxx`
     data: {
