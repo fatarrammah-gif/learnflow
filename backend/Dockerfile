@@ -25,4 +25,8 @@ RUN mkdir -p uploads
 EXPOSE 8000
 
 # Start the FastAPI server
-CMD uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1
+# --proxy-headers + --forwarded-allow-ips='*' — trust Railway's X-Forwarded-Proto
+# so redirects (e.g. FastAPI's trailing-slash redirect) use https, not http.
+# Without this, Uvicorn sees the internal http hop from Railway's edge and
+# generates insecure redirect URLs, which browsers block as mixed content.
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1 --proxy-headers --forwarded-allow-ips='*'
