@@ -24,9 +24,12 @@ interface Props {
 
 // Winding-road layout constants — a horizontal zigzag, node index alternating
 // above/below a center line, so consecutive nodes read as one snaking path.
+// How far a step sits from the center line scales with its estimated_hours,
+// so a longer step visibly swings higher/lower than a quick one.
 const HORIZONTAL_SPACING = 300;
-const AMPLITUDE = 140;
-const CENTER_Y = 220;
+const MIN_AMPLITUDE = 60;
+const MAX_AMPLITUDE = 190;
+const CENTER_Y = 260;
 
 export function RoadmapFlow({ nodes, edges, onToggleComplete }: Props) {
   // Clicking a step opens a small mock preview popup (see StepPreviewModal)
@@ -40,6 +43,17 @@ export function RoadmapFlow({ nodes, edges, onToggleComplete }: Props) {
     setPreviewNode(nodes.find((n) => n.id === nodeId) ?? null);
   };
 
+  // How far this step's pin sits from the road's center line, scaled by its
+  // estimated_hours relative to the shortest/longest step in this roadmap.
+  const hoursList = nodes.map((n) => n.estimated_hours);
+  const minHours = Math.min(...hoursList);
+  const maxHours = Math.max(...hoursList);
+  const amplitudeFor = (hours: number) => {
+    if (maxHours === minHours) return (MIN_AMPLITUDE + MAX_AMPLITUDE) / 2;
+    const t = (hours - minHours) / (maxHours - minHours);
+    return MIN_AMPLITUDE + t * (MAX_AMPLITUDE - MIN_AMPLITUDE);
+  };
+
   // Convert our backend data format into the shape React Flow expects
   const flowNodes: Node[] = nodes.map((n, index) => ({
     id: String(n.id),          // React Flow needs string IDs
@@ -49,7 +63,10 @@ export function RoadmapFlow({ nodes, edges, onToggleComplete }: Props) {
     // don't use anymore now that the road is the layout.
     position: {
       x: index * HORIZONTAL_SPACING,
-      y: index % 2 === 0 ? CENTER_Y - AMPLITUDE : CENTER_Y + AMPLITUDE,
+      y:
+        index % 2 === 0
+          ? CENTER_Y - amplitudeFor(n.estimated_hours)
+          : CENTER_Y + amplitudeFor(n.estimated_hours),
     },
     // Everything in `data` is available inside the SkillNode component as `data.xxx`
     data: {
