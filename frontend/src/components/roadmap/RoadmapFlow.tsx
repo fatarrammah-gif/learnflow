@@ -31,7 +31,7 @@ interface Props {
 // consecutive stops don't overlap.
 const HORIZONTAL_SPACING = 800;
 const BASELINE_Y = 550;
-const MAX_RISE = 380;
+const MAX_RISE = 1140; // 3x the elevation spread between shortest and longest step
 
 // Note: `edges` (the backend's dependency graph) is intentionally unused for
 // rendering — the road is drawn as one continuous path through `nodes` in
