@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   ReactFlow, MiniMap, Controls, Background, BackgroundVariant,
-  useNodesState, useEdgesState,
+  useNodesState,
   type Node, type Edge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";   // Required: React Flow's built-in styles
@@ -31,7 +31,10 @@ const MIN_AMPLITUDE = 60;
 const MAX_AMPLITUDE = 190;
 const CENTER_Y = 260;
 
-export function RoadmapFlow({ nodes, edges, onToggleComplete }: Props) {
+// Note: `edges` (the backend's dependency graph) is intentionally unused for
+// rendering — the road is drawn as one continuous path through `nodes` in
+// sequence instead, see the `rfEdges` comment below.
+export function RoadmapFlow({ nodes, onToggleComplete }: Props) {
   // Clicking a step opens a small mock preview popup (see StepPreviewModal)
   // instead of the real ResourcePanel drawer — the backend resource pipeline
   // doesn't exist yet, so ResourcePanel is just an empty state right now.
@@ -81,21 +84,34 @@ export function RoadmapFlow({ nodes, edges, onToggleComplete }: Props) {
     },
   }));
 
-  // Map node id -> completion status, so a road segment can show a progress
-  // accent once the skill it flows from is done ("unlocked path" read)
-  const completedById = new Map(nodes.map((n) => [n.id, n.is_completed]));
-
-  const flowEdges: Edge[] = edges.map((e) => ({
-    id: String(e.id),
-    source: String(e.source_node_id),
-    target: String(e.target_node_id),
-    type: "windingEdge",   // Custom paved-road edge — see WindingEdge.tsx
-    data: { sourceDone: completedById.get(e.source_node_id) ?? false },
-  }));
-
-  // useNodesState / useEdgesState let React Flow manage node dragging internally
+  // useNodesState lets React Flow manage node dragging internally
   const [rfNodes, , onNodesChange] = useNodesState(flowNodes);
-  const [rfEdges, , onEdgesChange] = useEdgesState(flowEdges);
+
+  // Render the road as ONE continuous path through every step in sequence —
+  // not the backend's dependency edges, which can branch/converge (multiple
+  // edges into one node) and read as several crossing lines instead of a
+  // single journey. Derived from rfNodes' live positions so dragging a step
+  // still redraws the road correctly.
+  const roadPoints = rfNodes.map((n) => ({
+    x: n.position.x,
+    y: n.position.y,
+    completed: Boolean((n.data as any).is_completed),
+  }));
+  // Not wrapped in useEdgesState — this single edge is fully derived from
+  // rfNodes every render (not independently draggable/editable), so it must
+  // recompute live rather than freeze at whatever it was on first mount.
+  const rfEdges: Edge[] =
+    roadPoints.length > 1
+      ? [
+          {
+            id: "road",
+            source: rfNodes[0].id,
+            target: rfNodes[rfNodes.length - 1].id,
+            type: "windingEdge",
+            data: { points: roadPoints },
+          },
+        ]
+      : [];
 
   return (
     <div className="w-full h-[calc(100vh-180px)] rounded-xl border border-border overflow-hidden">
@@ -103,7 +119,6 @@ export function RoadmapFlow({ nodes, edges, onToggleComplete }: Props) {
         nodes={rfNodes}
         edges={rfEdges}
         onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
