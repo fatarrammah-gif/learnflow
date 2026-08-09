@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  ReactFlow, MiniMap, Controls, Background, BackgroundVariant, MarkerType,
+  ReactFlow, MiniMap, Controls, Background, BackgroundVariant,
   useNodesState, useEdgesState,
   type Node, type Edge,
 } from "@xyflow/react";
@@ -81,22 +81,17 @@ export function RoadmapFlow({ nodes, edges, onToggleComplete }: Props) {
     },
   }));
 
-  // Map node id -> completion status, so an edge can be styled brighter/thicker
-  // once the skill it flows from is done ("unlocked path" read)
+  // Map node id -> completion status, so a road segment can show a progress
+  // accent once the skill it flows from is done ("unlocked path" read)
   const completedById = new Map(nodes.map((n) => [n.id, n.is_completed]));
 
-  const flowEdges: Edge[] = edges.map((e) => {
-    const sourceDone = completedById.get(e.source_node_id) ?? false;
-    const stroke = sourceDone ? "hsl(340 82% 52% / 0.85)" : "hsl(340 82% 52% / 0.35)";
-    return {
-      id: String(e.id),
-      source: String(e.source_node_id),
-      target: String(e.target_node_id),
-      type: "windingEdge",   // Custom S-curve so the path reads as one winding road
-      style: { stroke, strokeWidth: sourceDone ? 3 : 2 },
-      markerEnd: { type: MarkerType.ArrowClosed, color: stroke, width: 18, height: 18 },
-    };
-  });
+  const flowEdges: Edge[] = edges.map((e) => ({
+    id: String(e.id),
+    source: String(e.source_node_id),
+    target: String(e.target_node_id),
+    type: "windingEdge",   // Custom paved-road edge — see WindingEdge.tsx
+    data: { sourceDone: completedById.get(e.source_node_id) ?? false },
+  }));
 
   // useNodesState / useEdgesState let React Flow manage node dragging internally
   const [rfNodes, , onNodesChange] = useNodesState(flowNodes);

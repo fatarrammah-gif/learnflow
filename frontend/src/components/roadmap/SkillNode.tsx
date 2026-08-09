@@ -10,22 +10,26 @@ const CATEGORY_COLORS: Record<string, { border: string; bg: string; dot: string 
   Projects:        { border: "border-green-300",  bg: "bg-green-50",  dot: "bg-green-500" },
 };
 
-// Solid fills for the numbered "pin" badge — same category hue family as
-// CATEGORY_COLORS above, but solid rather than a light tint, so the pin
-// reads as a milestone marker distinct from the card's own border/bg tint.
-const PIN_COLORS: Record<string, string> = {
-  Foundations:     "bg-blue-500",
-  "Core Concepts": "bg-violet-500",
-  Advanced:        "bg-orange-500",
-  Projects:        "bg-green-600",
-};
+// Rainbow pin palette, rotating one color per step (not tied to category) —
+// matches the reference roadmap infographic's varied map-pin colors.
+const PIN_RAINBOW = [
+  "#2f69aa", // blue
+  "#169fc9", // cyan
+  "#63a447", // green
+  "#f1b51f", // yellow
+  "#df8723", // orange
+  "#d62e2e", // red
+  "#c52670", // pink
+  "#7b2862", // purple
+];
 
 const FALLBACK = { border: "border-border", bg: "bg-card", dot: "bg-muted-foreground" };
 
 export function SkillNode({ data, selected }: NodeProps) {
   const d = data as any;
   const colors = CATEGORY_COLORS[d.category] ?? FALLBACK;
-  const pinColor = PIN_COLORS[d.category] ?? "bg-muted-foreground";
+  const stepNumber: number = d.stepNumber ?? 1;
+  const pinColor = PIN_RAINBOW[(stepNumber - 1) % PIN_RAINBOW.length];
 
   return (
     <div
@@ -37,15 +41,25 @@ export function SkillNode({ data, selected }: NodeProps) {
       )}
       onClick={() => d.onNodeClick?.(d.nodeId)}
     >
-      {/* Numbered pin badge — milestone marker along the winding road */}
-      <div
-        className={cn(
-          "absolute -top-3 -left-3 w-7 h-7 rounded-full flex items-center justify-center",
-          "text-xs font-bold text-white shadow-md border-2 border-white",
-          pinColor
-        )}
-      >
-        {d.stepNumber}
+      {/* Teardrop map-pin marker — milestone marker along the winding road */}
+      <div className="absolute left-1/2 -translate-x-1/2 -top-9 w-7 h-9 drop-shadow-md">
+        <svg viewBox="0 0 34 42" className="w-full h-full">
+          <path
+            d="M17 0C8.7 0 2 6.7 2 15c0 10.1 15 25 15 25s15-14.9 15-25C32 6.7 25.3 0 17 0Z"
+            fill={pinColor}
+          />
+          <circle cx="17" cy="14.5" r="9" fill="#fff" />
+          <text
+            x="17"
+            y="18.5"
+            textAnchor="middle"
+            fontSize="12"
+            fontWeight="700"
+            fill={pinColor}
+          >
+            {stepNumber}
+          </text>
+        </svg>
       </div>
 
       <Handle type="target" position={Position.Left} className="!bg-border !border-border !w-2 !h-2" />
