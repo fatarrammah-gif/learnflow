@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ReactFlow, MiniMap, Controls, Background, BackgroundVariant, MarkerType,
   useNodesState, useEdgesState,
@@ -5,10 +6,14 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";   // Required: React Flow's built-in styles
 import { SkillNode } from "./SkillNode";
+import { WindingEdge } from "./WindingEdge";
+import { StepPreviewModal } from "./StepPreviewModal";
 import type { SkillNode as SkillNodeType, NodeEdge } from "@/types/roadmap";
 
-// Register our custom node type — key must match the "type" field we set on each node
+// Register our custom node/edge types — the key must match the "type" field
+// we set on each node/edge below
 const nodeTypes = { skillNode: SkillNode };
+const edgeTypes = { windingEdge: WindingEdge };
 
 interface Props {
   nodes: SkillNodeType[];
@@ -17,15 +22,35 @@ interface Props {
   onToggleComplete: (nodeId: number) => void;
 }
 
-export function RoadmapFlow({ nodes, edges, onNodeClick, onToggleComplete }: Props) {
+// Winding-road layout constants — a horizontal zigzag, node index alternating
+// above/below a center line, so consecutive nodes read as one snaking path.
+const HORIZONTAL_SPACING = 300;
+const AMPLITUDE = 140;
+const CENTER_Y = 220;
+
+export function RoadmapFlow({ nodes, edges, onToggleComplete }: Props) {
+  // Clicking a step opens a small mock preview popup (see StepPreviewModal)
+  // instead of the real ResourcePanel drawer — the backend resource pipeline
+  // doesn't exist yet, so ResourcePanel is just an empty state right now.
+  // This is a local, Map-view-only override; Steps/Schedule views still use
+  // the `onNodeClick` prop to open the real (currently empty) drawer.
+  const [previewNode, setPreviewNode] = useState<SkillNodeType | null>(null);
+
+  const handleStepClick = (nodeId: number) => {
+    setPreviewNode(nodes.find((n) => n.id === nodeId) ?? null);
+  };
+
   // Convert our backend data format into the shape React Flow expects
   const flowNodes: Node[] = nodes.map((n, index) => ({
     id: String(n.id),          // React Flow needs string IDs
     type: "skillNode",         // Must match the key in nodeTypes above
-    // Use saved position if available, otherwise auto-arrange in a 3-column grid
-    position: (n.position_x || n.position_y)
-      ? { x: n.position_x, y: n.position_y }
-      : { x: (index % 3) * 260, y: Math.floor(index / 3) * 160 },
+    // Always lay out along the winding road — existing roadmaps have saved
+    // positions from the old 3-column grid layout, which we intentionally
+    // don't use anymore now that the road is the layout.
+    position: {
+      x: index * HORIZONTAL_SPACING,
+      y: index % 2 === 0 ? CENTER_Y - AMPLITUDE : CENTER_Y + AMPLITUDE,
+    },
     // Everything in `data` is available inside the SkillNode component as `data.xxx`
     data: {
       title: n.title,
@@ -33,7 +58,8 @@ export function RoadmapFlow({ nodes, edges, onNodeClick, onToggleComplete }: Pro
       estimated_hours: n.estimated_hours,
       is_completed: n.is_completed,
       nodeId: n.id,
-      onNodeClick,
+      stepNumber: index + 1,
+      onNodeClick: handleStepClick,
       onToggleComplete,
     },
   }));
@@ -49,7 +75,7 @@ export function RoadmapFlow({ nodes, edges, onNodeClick, onToggleComplete }: Pro
       id: String(e.id),
       source: String(e.source_node_id),
       target: String(e.target_node_id),
-      type: "smoothstep",   // Curved edge style
+      type: "windingEdge",   // Custom S-curve so the path reads as one winding road
       style: { stroke, strokeWidth: sourceDone ? 3 : 2 },
       markerEnd: { type: MarkerType.ArrowClosed, color: stroke, width: 18, height: 18 },
     };
@@ -67,6 +93,7 @@ export function RoadmapFlow({ nodes, edges, onNodeClick, onToggleComplete }: Pro
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         fitViewOptions={{ padding: 0.3 }}
         style={{ background: "hsl(38 38% 90%)" }}   // Match warm cream --background
@@ -87,6 +114,10 @@ export function RoadmapFlow({ nodes, edges, onNodeClick, onToggleComplete }: Pro
           color="#C8BDA8"
         />
       </ReactFlow>
+
+      {previewNode && (
+        <StepPreviewModal node={previewNode} onClose={() => setPreviewNode(null)} />
+      )}
     </div>
   );
 }

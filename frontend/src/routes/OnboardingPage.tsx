@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { StepIndicator } from "@/components/onboarding/StepIndicator";
@@ -36,6 +36,12 @@ export function OnboardingPage() {
   // Local state for step 2
   const [weeks, setWeeks] = useState(store.goalData.time_weeks ?? 8);
   const [hpw, setHpw] = useState(store.goalData.hours_per_week ?? 10);
+
+  // Reset the goal wizard whenever we navigate away from this page, so a
+  // later visit always starts fresh instead of resuming stale form data.
+  useEffect(() => {
+    return () => store.reset();
+  }, []);
 
   // Add the skill chip when the user presses Enter or clicks a button
   const addSkill = () => {

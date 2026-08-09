@@ -10,23 +10,45 @@ const CATEGORY_COLORS: Record<string, { border: string; bg: string; dot: string 
   Projects:        { border: "border-green-300",  bg: "bg-green-50",  dot: "bg-green-500" },
 };
 
+// Solid fills for the numbered "pin" badge — same category hue family as
+// CATEGORY_COLORS above, but solid rather than a light tint, so the pin
+// reads as a milestone marker distinct from the card's own border/bg tint.
+const PIN_COLORS: Record<string, string> = {
+  Foundations:     "bg-blue-500",
+  "Core Concepts": "bg-violet-500",
+  Advanced:        "bg-orange-500",
+  Projects:        "bg-green-600",
+};
+
 const FALLBACK = { border: "border-border", bg: "bg-card", dot: "bg-muted-foreground" };
 
 export function SkillNode({ data, selected }: NodeProps) {
   const d = data as any;
   const colors = CATEGORY_COLORS[d.category] ?? FALLBACK;
+  const pinColor = PIN_COLORS[d.category] ?? "bg-muted-foreground";
 
   return (
     <div
       className={cn(
-        "px-4 py-3 rounded-xl border-2 cursor-pointer min-w-[160px] max-w-[210px] shadow-sm transition-all bg-white",
+        "relative px-4 py-3 rounded-xl border-2 cursor-pointer min-w-[160px] max-w-[210px] shadow-sm transition-all bg-white",
         colors.border,
         selected && "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-md",
         d.is_completed && "opacity-50"
       )}
       onClick={() => d.onNodeClick?.(d.nodeId)}
     >
-      <Handle type="target" position={Position.Top} className="!bg-border !border-border !w-2 !h-2" />
+      {/* Numbered pin badge — milestone marker along the winding road */}
+      <div
+        className={cn(
+          "absolute -top-3 -left-3 w-7 h-7 rounded-full flex items-center justify-center",
+          "text-xs font-bold text-white shadow-md border-2 border-white",
+          pinColor
+        )}
+      >
+        {d.stepNumber}
+      </div>
+
+      <Handle type="target" position={Position.Left} className="!bg-border !border-border !w-2 !h-2" />
 
       <div className="flex items-start gap-2">
         <button
@@ -58,7 +80,7 @@ export function SkillNode({ data, selected }: NodeProps) {
         </div>
       </div>
 
-      <Handle type="source" position={Position.Bottom} className="!bg-border !border-border !w-2 !h-2" />
+      <Handle type="source" position={Position.Right} className="!bg-border !border-border !w-2 !h-2" />
     </div>
   );
 }
