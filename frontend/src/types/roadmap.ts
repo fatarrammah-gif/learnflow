@@ -1,3 +1,5 @@
+import type { YoutubeResource } from "./resource";
+
 export type RoadmapFormat = "interactive_map" | "schedule" | "steps";
 export type RoadmapStatus = "generating" | "ready" | "error" | "time_conflict";
 export type TimeStrategy = "focus" | "extend" | "compromise";
@@ -15,6 +17,7 @@ export interface SkillNode {
   is_completed: boolean;
   search_queries: string[] | null;
   key_concepts: string[] | null;
+  resources: YoutubeResource[];
 }
 
 export interface NodeEdge {
@@ -33,4 +36,7 @@ export interface Roadmap {
   created_at: string;
   nodes: SkillNode[];
   edges: NodeEdge[];
+  // Only populated by the roadmap-list endpoint
+  goal_title?: string | null;
+  node_count?: number;
 }

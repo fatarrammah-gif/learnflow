@@ -1,8 +1,10 @@
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { roadmapsApi } from "@/api/roadmaps";
+import { criteriaApi } from "@/api/criteria";
+import { nodesApi } from "@/api/nodes";
 import { GeneratingOverlay } from "@/components/roadmap/GeneratingOverlay";
 import { TimeConflictModal } from "@/components/roadmap/TimeConflictModal";
 import { RoadmapFlow } from "@/components/roadmap/RoadmapFlow";
@@ -31,6 +33,7 @@ export function RoadmapPage() {
   const { roadmapId } = useParams<{ roadmapId: string }>();
   const { setRoadmap, selectNode } = useRoadmapStore();
   const [viewFormat, setViewFormat] = useState<RoadmapFormat>("interactive_map");
+  const queryClient = useQueryClient();
 
   // useQuery fetches the roadmap and caches it
   // refetchInterval polls every 2 seconds while the roadmap is still generating
@@ -43,14 +46,30 @@ export function RoadmapPage() {
     },
   });
 
+  // Criteria belong to the goal, not the roadmap — fetch once we know the goal_id
+  const { data: criteria } = useQuery({
+    queryKey: ["criteria", roadmap?.goal_id],
+    queryFn: () => criteriaApi.list(roadmap!.goal_id),
+    enabled: !!roadmap,
+  });
+
   // When data arrives, push it into the global roadmap store so other components can read it
   // useEffect runs after the render whenever `roadmap` changes
   useEffect(() => {
     if (roadmap) setRoadmap(roadmap);
   }, [roadmap, setRoadmap]);
 
+  const toggleComplete = useMutation({
+    mutationFn: (nodeId: number) => nodesApi.toggleComplete(nodeId),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["roadmap", roadmapId] }),
+  });
+
   const handleNodeClick = (nodeId: number) => {
     selectNode(nodeId);  // Opens the ResourcePanel for this node
+  };
+
+  const handleToggleComplete = (nodeId: number) => {
+    toggleComplete.mutate(nodeId);
   };
 
   const handleResolveTime = async (strategy: TimeStrategy) => {
@@ -121,6 +140,7 @@ export function RoadmapPage() {
               nodes={roadmap.nodes}
               edges={roadmap.edges}
               onNodeClick={handleNodeClick}
+              onToggleComplete={handleToggleComplete}
             />
           </div>
         )}
@@ -137,7 +157,7 @@ export function RoadmapPage() {
       </div>
 
       {/* Resource panel slides in from the right when a node is clicked */}
-      <ResourcePanel resources={[]} criteria={[]} isLoading={false} />
+      <ResourcePanel criteria={criteria ?? []} isLoading={false} />
     </div>
   );
 }

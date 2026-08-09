@@ -29,11 +29,21 @@ export function SkillNode({ data, selected }: NodeProps) {
       <Handle type="target" position={Position.Top} className="!bg-border !border-border !w-2 !h-2" />
 
       <div className="flex items-start gap-2">
-        {d.is_completed ? (
-          <CheckCircle2 size={13} className="text-green-500 mt-0.5 shrink-0" />
-        ) : (
-          <div className={cn("w-1.5 h-1.5 rounded-full mt-1.5 shrink-0", colors.dot)} />
-        )}
+        <button
+          type="button"
+          className="shrink-0 -m-1 p-1"
+          title={d.is_completed ? "Mark incomplete" : "Mark complete"}
+          onClick={(e) => {
+            e.stopPropagation();
+            d.onToggleComplete?.(d.nodeId);
+          }}
+        >
+          {d.is_completed ? (
+            <CheckCircle2 size={13} className="text-green-500 mt-0.5" />
+          ) : (
+            <div className={cn("w-1.5 h-1.5 rounded-full mt-1.5", colors.dot)} />
+          )}
+        </button>
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-sm leading-tight text-foreground font-display">
             {d.title}

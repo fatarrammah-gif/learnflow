@@ -4,20 +4,19 @@ import { Button } from "@/components/ui/button";
 import { ResourceCard } from "./ResourceCard";
 import { useRoadmapStore } from "@/store/roadmapStore";
 import { staggerContainer, fadeInUp } from "@/lib/motion";
-import type { YoutubeResource } from "@/types/resource";
 import type { Criterion } from "@/types/criteria";
 
 interface Props {
-  resources: YoutubeResource[];
   criteria: Criterion[];
   isLoading: boolean;
 }
 
 // ResourcePanel — a drawer that slides in from the right when the user clicks a skill node
 // It shows the top YouTube videos for that specific skill topic
-export function ResourcePanel({ resources, criteria, isLoading }: Props) {
+export function ResourcePanel({ criteria, isLoading }: Props) {
   const { isPanelOpen, setPanelOpen, getSelectedNode } = useRoadmapStore();
   const node = getSelectedNode();  // Get the currently selected skill node from the store
+  const resources = node?.resources ?? [];
 
   // Don't render anything if no node is selected
   if (!isPanelOpen) return null;

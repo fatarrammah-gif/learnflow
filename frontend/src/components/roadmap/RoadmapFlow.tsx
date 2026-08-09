@@ -1,5 +1,5 @@
 import {
-  ReactFlow, MiniMap, Controls, Background, BackgroundVariant,
+  ReactFlow, MiniMap, Controls, Background, BackgroundVariant, MarkerType,
   useNodesState, useEdgesState,
   type Node, type Edge,
 } from "@xyflow/react";
@@ -14,9 +14,10 @@ interface Props {
   nodes: SkillNodeType[];
   edges: NodeEdge[];
   onNodeClick: (nodeId: number) => void;
+  onToggleComplete: (nodeId: number) => void;
 }
 
-export function RoadmapFlow({ nodes, edges, onNodeClick }: Props) {
+export function RoadmapFlow({ nodes, edges, onNodeClick, onToggleComplete }: Props) {
   // Convert our backend data format into the shape React Flow expects
   const flowNodes: Node[] = nodes.map((n, index) => ({
     id: String(n.id),          // React Flow needs string IDs
@@ -33,15 +34,26 @@ export function RoadmapFlow({ nodes, edges, onNodeClick }: Props) {
       is_completed: n.is_completed,
       nodeId: n.id,
       onNodeClick,
+      onToggleComplete,
     },
   }));
 
-  const flowEdges: Edge[] = edges.map((e) => ({
-    id: String(e.id),
-    source: String(e.source_node_id),
-    target: String(e.target_node_id),
-    type: "smoothstep",   // Curved edge style
-  }));
+  // Map node id -> completion status, so an edge can be styled brighter/thicker
+  // once the skill it flows from is done ("unlocked path" read)
+  const completedById = new Map(nodes.map((n) => [n.id, n.is_completed]));
+
+  const flowEdges: Edge[] = edges.map((e) => {
+    const sourceDone = completedById.get(e.source_node_id) ?? false;
+    const stroke = sourceDone ? "hsl(340 82% 52% / 0.85)" : "hsl(340 82% 52% / 0.35)";
+    return {
+      id: String(e.id),
+      source: String(e.source_node_id),
+      target: String(e.target_node_id),
+      type: "smoothstep",   // Curved edge style
+      style: { stroke, strokeWidth: sourceDone ? 3 : 2 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: stroke, width: 18, height: 18 },
+    };
+  });
 
   // useNodesState / useEdgesState let React Flow manage node dragging internally
   const [rfNodes, , onNodesChange] = useNodesState(flowNodes);

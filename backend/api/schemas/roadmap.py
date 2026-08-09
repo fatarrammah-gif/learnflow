@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel, ConfigDict
+from api.schemas.resource import ResourceDetailResponse
 
 
 class RoadmapGenerateRequest(BaseModel):
@@ -22,6 +23,7 @@ class SkillNodeResponse(BaseModel):
     is_completed: bool
     search_queries: Optional[List[str]]
     key_concepts: Optional[List[str]]
+    resources: List[ResourceDetailResponse] = []
 
 
 class NodeEdgeResponse(BaseModel):
@@ -42,6 +44,10 @@ class RoadmapResponse(BaseModel):
     time_conflict_strategy: str
     total_hours_est: Optional[float]
     created_at: datetime
+    # Only populated by the list endpoint (joined in there) — plain detail/get
+    # endpoints leave these as their defaults.
+    goal_title: Optional[str] = None
+    node_count: int = 0
 
 
 class RoadmapDetailResponse(RoadmapResponse):

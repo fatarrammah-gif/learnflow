@@ -1,10 +1,11 @@
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from db.database import get_db, AsyncSessionLocal
-from db.models import Roadmap, LearningGoal
+from db.models import Roadmap, LearningGoal, SkillNode
 from api.schemas.roadmap import (
-    RoadmapGenerateRequest, RoadmapDetailResponse, TimeResolutionRequest
+    RoadmapGenerateRequest, RoadmapResponse, RoadmapDetailResponse, TimeResolutionRequest
 )
 from db.crud import get_roadmap_with_nodes
 
@@ -41,6 +42,28 @@ async def generate_roadmap(
 
     background_tasks.add_task(_run_generation, roadmap.id, goal_id)
     return {"roadmap_id": roadmap.id, "status": "generating"}
+
+
+@router.get("/roadmaps/", response_model=List[RoadmapResponse])
+async def list_roadmaps(goal_id: Optional[int] = None, db: AsyncSession = Depends(get_db)):
+    query = (
+        select(Roadmap, LearningGoal.title, func.count(SkillNode.id))
+        .join(LearningGoal, Roadmap.goal_id == LearningGoal.id)
+        .outerjoin(SkillNode, SkillNode.roadmap_id == Roadmap.id)
+        .group_by(Roadmap.id, LearningGoal.title)
+        .order_by(Roadmap.created_at.desc())
+    )
+    if goal_id is not None:
+        query = query.where(Roadmap.goal_id == goal_id)
+
+    result = await db.execute(query)
+    responses = []
+    for roadmap, goal_title, node_count in result.all():
+        response = RoadmapResponse.model_validate(roadmap)
+        response.goal_title = goal_title
+        response.node_count = node_count
+        responses.append(response)
+    return responses
 
 
 @router.get("/roadmaps/{roadmap_id}", response_model=RoadmapDetailResponse)

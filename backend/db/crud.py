@@ -1,7 +1,15 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from db.models import LearningGoal, Criterion, Roadmap, SkillNode, NodeEdge
+from db.models import LearningGoal, Criterion, Roadmap, SkillNode, NodeEdge, YoutubeResource
+
+# Resources are serialized with their scores/timestamps (ResourceDetailResponse),
+# so both need eager loading anywhere a SkillNode.resources relation is loaded —
+# otherwise Pydantic's response serialization hits an async lazy-load error.
+_RESOURCES_WITH_DETAIL = selectinload(SkillNode.resources).options(
+    selectinload(YoutubeResource.scores),
+    selectinload(YoutubeResource.timestamps),
+)
 
 
 async def get_goal(db: AsyncSession, goal_id: int):
@@ -28,7 +36,7 @@ async def get_roadmap_with_nodes(db: AsyncSession, roadmap_id: int):
         select(Roadmap)
         .where(Roadmap.id == roadmap_id)
         .options(
-            selectinload(Roadmap.nodes),
+            selectinload(Roadmap.nodes).options(_RESOURCES_WITH_DETAIL),
             selectinload(Roadmap.edges),
         )
     )
@@ -39,9 +47,7 @@ async def get_node_with_resources(db: AsyncSession, node_id: int):
     result = await db.execute(
         select(SkillNode)
         .where(SkillNode.id == node_id)
-        .options(
-            selectinload(SkillNode.resources)
-        )
+        .options(_RESOURCES_WITH_DETAIL)
     )
     return result.scalar_one_or_none()
 

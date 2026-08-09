@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useRoadmapStore } from "@/store/roadmapStore";
+import { nodesApi } from "@/api/nodes";
 import { ArrowRight, CheckCircle2, Map, TrendingUp } from "lucide-react";
 import { Button, MotionButton } from "@/components/ui/button";
 import { Card, MotionCard } from "@/components/ui/card";
@@ -13,7 +15,20 @@ import { staggerContainer, fadeInUp } from "@/lib/motion";
 // Progress bars and the skill list animate in on mount via framer-motion.
 export function ProgressPage() {
   const navigate = useNavigate();
-  const { activeRoadmap } = useRoadmapStore();
+  const { activeRoadmap, setRoadmap } = useRoadmapStore();
+
+  const toggleComplete = useMutation({
+    mutationFn: (nodeId: number) => nodesApi.toggleComplete(nodeId),
+    onSuccess: (result, nodeId) => {
+      if (!activeRoadmap) return;
+      setRoadmap({
+        ...activeRoadmap,
+        nodes: activeRoadmap.nodes.map((n) =>
+          n.id === nodeId ? { ...n, is_completed: result.is_completed } : n
+        ),
+      });
+    },
+  });
 
   // Compute overall progress from the active roadmap in the store
   const nodes = activeRoadmap?.nodes ?? [];
@@ -152,12 +167,19 @@ export function ProgressPage() {
                     variants={fadeInUp}
                     className="flex items-center gap-4 px-5 py-3.5"
                   >
-                    {/* Completion icon */}
-                    {node.is_completed ? (
-                      <CheckCircle2 size={16} className="text-primary shrink-0" />
-                    ) : (
-                      <div className="w-4 h-4 rounded-full border-2 border-border shrink-0" />
-                    )}
+                    {/* Completion icon — click to toggle */}
+                    <button
+                      type="button"
+                      className="shrink-0"
+                      title={node.is_completed ? "Mark incomplete" : "Mark complete"}
+                      onClick={() => toggleComplete.mutate(node.id)}
+                    >
+                      {node.is_completed ? (
+                        <CheckCircle2 size={16} className="text-primary" />
+                      ) : (
+                        <div className="w-4 h-4 rounded-full border-2 border-border hover:border-primary transition-colors" />
+                      )}
+                    </button>
 
                     <div className="flex-1 min-w-0">
                       <div
