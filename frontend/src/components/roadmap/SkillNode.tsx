@@ -41,25 +41,12 @@ export function SkillNode({ data, selected }: NodeProps) {
       )}
       onClick={() => d.onNodeClick?.(d.nodeId)}
     >
-      {/* Teardrop map-pin marker — milestone marker along the winding road */}
-      <div className="absolute left-1/2 -translate-x-1/2 -top-9 w-7 h-9 drop-shadow-md">
-        <svg viewBox="0 0 34 42" className="w-full h-full">
-          <path
-            d="M17 0C8.7 0 2 6.7 2 15c0 10.1 15 25 15 25s15-14.9 15-25C32 6.7 25.3 0 17 0Z"
-            fill={pinColor}
-          />
-          <circle cx="17" cy="14.5" r="9" fill="#fff" />
-          <text
-            x="17"
-            y="18.5"
-            textAnchor="middle"
-            fontSize="12"
-            fontWeight="700"
-            fill={pinColor}
-          >
-            {stepNumber}
-          </text>
-        </svg>
+      {/* Square destination marker — milestone marker along the winding road */}
+      <div
+        className="absolute left-1/2 -translate-x-1/2 -top-8 w-8 h-8 rounded-md shadow-md border-2 border-white flex items-center justify-center text-xs font-bold text-white"
+        style={{ background: pinColor }}
+      >
+        {stepNumber}
       </div>
 
       <Handle type="target" position={Position.Left} className="!bg-border !border-border !w-2 !h-2" />
